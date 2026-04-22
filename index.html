@@ -400,21 +400,32 @@ right.ontouchstart = () => keys.right = true;
 right.ontouchend = () => keys.right = false;
 jump.ontouchstart = () => keys.up = true;
 jump.ontouchend = () => keys.up = false;
+const keyMap = {
+    KeyA: "left",
+    ArrowLeft: "left",
+
+    KeyD: "right",
+    ArrowRight: "right",
+
+    KeyW: "up",
+    ArrowUp: "up",
+    Space: "up"
+};
+
 document.addEventListener("keydown", (e) => {
-    if (e.key >= "1" && e.key <= "3") {
-        hotbar.selected = parseInt(e.key) - 1;
-        updateHotbar();
+    const action = keyMap[e.code];
+    if(action){
+        keys[action] = true;
+        e.preventDefault();
     }
 });
-document.addEventListener("keydown", e => {
-    if(e.key === "a") keys.left = true;
-    if(e.key === "d") keys.right = true;
-    if(e.key === "w") keys.up = true;
-});
-document.addEventListener("keyup", e => {
-    if(e.key === "a") keys.left = false;
-    if(e.key === "d") keys.right = false;
-    if(e.key === "w") keys.up = false;
+
+document.addEventListener("keyup", (e) => {
+    const action = keyMap[e.code];
+    if(action){
+        keys[action] = false;
+        e.preventDefault();
+    }
 });
 const toggleBtn = document.getElementById("toggleHotbar");
 let uiVisible = true;
@@ -429,14 +440,12 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 /* TOUCH - PC */
 canvas.addEventListener("mousedown", e => {
-    if (hotbar.selected !== 0) {
-        if (hotbar.selected === 1) {
-            placeBlock(e.clientX, e.clientY);
-        }
-        return;
+    if(hotbar.selected === 0){
+        isBreakingHeld = true;
+        startBreaking(e.clientX, e.clientY, true);
+    } else {
+        placeBlock(e.clientX, e.clientY);
     }
-    isBreakingHeld = true;
-    startBreaking(e.clientX, e.clientY, true);
 });
 canvas.addEventListener("mouseup", () => {
     isBreakingHeld = false;
@@ -452,21 +461,15 @@ canvas.addEventListener("mousemove", e => {
 canvas.addEventListener("touchstart", e => {
     if(e.target.tagName !== "CANVAS") return;
     e.preventDefault();
-
     const touch = e.touches[0];
     const x = touch.clientX;
     const y = touch.clientY;
-
-    if (hotbar.selected !== 0) {
-        if (hotbar.selected === 1) {
-            placeBlock(x, y);
-        }
-        return;
+    if(hotbar.selected === 0){
+        isBreakingHeld = true;
+        startBreaking(x, y, true);
+    } else {
+        placeBlock(x, y);
     }
-
-    isBreakingHeld = true;
-    startBreaking(x, y, true);
-
 }, {passive:false});
 canvas.addEventListener("touchmove", e => {
     if(!isBreakingHeld) return;
@@ -619,10 +622,9 @@ else if (depth > 0.55) {
     if (spawnY === 0) spawnY = centerY * blockSize;
     window.spawnY = spawnY;
 }
-updateHotbar()
 function generateWaterLayer() {
 
-    const startY = Math.floor(spawnY / blockSize) + 3;
+    const startY = Math.floor(spawnY / blockSize) + 2;
     for (let y = startY; y < worldHeight; y++) {
         for (let x = 0; x < worldWidth; x++) {
             if (world[y][x] === 0) {
@@ -1259,6 +1261,7 @@ if(graniteIcon){
 const ui = document.getElementById("uiContainer");
 let currentOffset = 0;
 let isDraggingUI = false;
+let selectedSlot = 0;
 /* UI DRAG SYSTEM */
 document.addEventListener("touchstart", (e) => {
     if(e.target.tagName === "BUTTON") return;
@@ -1284,17 +1287,6 @@ document.addEventListener("touchend", (e) => {
     ui.style.transform = `translateY(${currentOffset}px)`;
 });
 /* HOTBAR / INVENTORY */
-document.querySelectorAll("#hotbar .slot").forEach((slot, i) => {
-    slot.addEventListener("click", () => {
-        hotbar.selected = i;
-        updateHotbar();
-    });
-    slot.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        hotbar.selected = i;
-        updateHotbar();
-    }, { passive: false });
-});
 document.querySelectorAll("#inventoryUI .slot").forEach((el, i) => {
     el.onclick = () => {
         const items = Object.keys(inventory).filter(k => inventory[k] > 0);
