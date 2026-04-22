@@ -400,32 +400,17 @@ right.ontouchstart = () => keys.right = true;
 right.ontouchend = () => keys.right = false;
 jump.ontouchstart = () => keys.up = true;
 jump.ontouchend = () => keys.up = false;
-const keyMap = {
-    KeyA: "left",
-    ArrowLeft: "left",
-
-    KeyD: "right",
-    ArrowRight: "right",
-
-    KeyW: "up",
-    ArrowUp: "up",
-    Space: "up"
-};
-
-document.addEventListener("keydown", (e) => {
-    const action = keyMap[e.code];
-    if(action){
-        keys[action] = true;
-        e.preventDefault();
-    }
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
+document.addEventListener("keydown", e => {
+    if(e.key === "a") keys.left = true;
+    if(e.key === "d") keys.right = true;
+    if(e.key === "w") keys.up = true;
 });
-
-document.addEventListener("keyup", (e) => {
-    const action = keyMap[e.code];
-    if(action){
-        keys[action] = false;
-        e.preventDefault();
-    }
+document.addEventListener("keyup", e => {
+    if(e.key === "a") keys.left = false;
+    if(e.key === "d") keys.right = false;
+    if(e.key === "w") keys.up = false;
 });
 const toggleBtn = document.getElementById("toggleHotbar");
 let uiVisible = true;
@@ -621,7 +606,8 @@ else if (depth > 0.55) {
     }
     if (spawnY === 0) spawnY = centerY * blockSize;
     window.spawnY = spawnY;
-    }
+}
+updateHotbar();
 function generateWaterLayer() {
 
     const startY = Math.floor(spawnY / blockSize) + 2;
@@ -702,7 +688,6 @@ function respawnPlayer() {
     playerHealth = 6; 
 }
 /* GENERATE WORLD */
-updateHotbar();
 generateTerrain();
 generateWaterLayer();
 const spawnX = centerX * blockSize;
@@ -864,7 +849,13 @@ function updateCamera(){
         player.y-canvas.height/(2*zoom),    
         worldPixelHeight-canvas.height/zoom    
     ));    
-}    
+}
+function resizeCanvas() {
+    setTimeout(() => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }, 100);
+}
 let startY = 0;
 let breaking = null;
 let breakingCooldown = 10000;
@@ -1242,7 +1233,8 @@ function drawBreaking(){
 /* GAME LOOP */
 function update() {
     updateMovement();
-    checkLavaCollision();
+    checkLavaCollision()
+    resizeCanvas();
     updateCamera();
     updateBreaking();
     updateDrops();
