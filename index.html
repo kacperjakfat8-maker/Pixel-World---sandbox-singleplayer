@@ -621,8 +621,7 @@ else if (depth > 0.55) {
     }
     if (spawnY === 0) spawnY = centerY * blockSize;
     window.spawnY = spawnY;
-}
-    updateHotbar()
+    }
 function generateWaterLayer() {
 
     const startY = Math.floor(spawnY / blockSize) + 2;
@@ -703,6 +702,7 @@ function respawnPlayer() {
     playerHealth = 6; 
 }
 /* GENERATE WORLD */
+updateHotbar();
 generateTerrain();
 generateWaterLayer();
 const spawnX = centerX * blockSize;
