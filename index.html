@@ -244,7 +244,7 @@ let inventory = {
     sand: 0,
     sandstone: 0,
     gem_soil: 0,
-    black_brick: 0,
+    black_brick: 1,
     soil_seed: 0,
     granite_seed: 0,
     cave_bg_seed: 0,
@@ -256,7 +256,7 @@ let inventory = {
     sand_seed: 0,
     sandstone_seed: 0,
     gem_soil_seed: 0,
-    black_brick_seed: 0
+    black_brick_seed: 1
 };
 let inventoryFullMessageTime = 0;
 let trees = [];
@@ -695,10 +695,17 @@ function generateWaterLayer() {
 }
 /* RECIPES */
 function getSeedResult(a, b){
-    const combo = [a, b].sort().join("+");
-    if(combo === "cave_bg_seed+soil_seed") return "grass_seed";
-    if(combo === "lava_seed+soil_seed") return "wood_seed";
-    if(combo === "obsidian_seed+soil_seed") return "black_brick_seed";
+    const combo = new Set([a, b]);
+
+    if(combo.has("soil_seed") && combo.has("obsidian_seed"))
+        return "black_brick_seed";
+
+    if(combo.has("soil_seed") && combo.has("lava_seed"))
+        return "wood_seed";
+
+    if(combo.has("soil_seed") && combo.has("cave_bg_seed"))
+        return "grass_seed";
+
     return null;
 }
 function hasSolidNeighbor(x, y){
@@ -1686,12 +1693,19 @@ else if(drop.type === "gem_soil_seed"){
     px(3,3,1,1,"#00ffff");
 }
 else if(drop.type === "black_brick"){
-    px(0,0,8,8,"#1a1a1a");
-    px(3,3,2,2,"#333");
+    px(0,0,8,8,"#121212");
+    px(1,1,2,2,"#1f1f1f");
+    px(4,1,2,2,"#242424");
+    px(1,4,2,2,"#1b1b1b");
+    px(4,4,2,2,"#202020");
+    px(3,2,1,1,"#3a3a3a");
 }
 else if(drop.type === "black_brick_seed"){
-    px(2,2,4,4,"#1a1a1a");
-    px(3,3,2,2,"#444");
+    px(2,2,4,4,"#0f0f0f");
+    px(3,1,2,2,"#2a2a2a");
+    px(1,3,2,2,"#1c1c1c");
+    px(4,4,2,2,"#3a3a3a");
+    px(3,3,1,1,"#8b5cff");
 }
         ctx.restore();
     });
@@ -1908,22 +1922,20 @@ function placeBlock(mouseX, mouseY) {
     const worldCell = world[worldY]?.[worldX] ?? 0;
     const bgCell = background[worldY]?.[worldX] ?? 0;
     if (isSeed) {
+    const existingTree = trees.find(t => t.x === worldX && t.y === worldY);
+    const worldCell = world[worldY]?.[worldX] ?? 0;
     if (existingTree) {
         const result = getSeedResult(existingTree.type, item);
-        if (!result) return; 
+        if (!result) return;
         trees = trees.filter(t => t !== existingTree);
-        let growTime = 30000;
-
-if(item === "black_brick_seed") growTime = 60000;
-
-trees.push({
-    x: worldX,
-    y: worldY,
-    type: item,
-    stage: 0,
-    plantedAt: Date.now(),
-    growTime: growTime
-});
+        trees.push({
+            x: worldX,
+            y: worldY,
+            type: result,
+            stage: 0,
+            plantedAt: Date.now(),
+            growTime: 30000
+        });
         inventory[item]--;
         if (inventory[item] <= 0) {
             inventory[item] = 0;
