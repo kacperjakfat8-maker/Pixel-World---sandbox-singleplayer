@@ -243,6 +243,8 @@ let inventory = {
     water: 0,
     sand: 0,
     sandstone: 0,
+    gem_soil: 0,
+    black_brick: 1,
     soil_seed: 0,
     granite_seed: 0,
     cave_bg_seed: 0,
@@ -252,7 +254,9 @@ let inventory = {
     marble_block: 0,
     water_seed: 0,
     sand_seed: 0,
-    sandstone_seed: 0
+    sandstone_seed: 0,
+    gem_soil_seed: 0,
+    black_brick_seed: 1
 };
 let inventoryFullMessageTime = 0;
 let trees = [];
@@ -386,6 +390,31 @@ else if(type === "sandstone"){
     px(1,1,1,1,"#bfa27a");
     px(3,2,1,1,"#bfa27a");
     px(6,3,1,1,"#bfa27a");
+}
+else if(type === "gem_soil"){
+    px(0,0,8,8,"#7a4f2b");
+    px(1,1,1,1,"#5c3a1f");
+    px(3,2,1,1,"#5c3a1f");
+    px(6,1,1,1,"#5c3a1f");
+    px(2,5,1,1,"#5c3a1f");
+    px(2,2,1,1,"#00aaff");
+    px(5,3,1,1,"#0088ff");
+    px(4,5,1,1,"#33ccff");
+    px(6,6,1,1,"#66ddff");
+}
+else if(type === "black_brick"){
+    px(0,0,8,8,"#1a1a1a");
+    px(0,0,4,3,"#2a2a2a");
+    px(4,0,4,3,"#232323");
+    px(0,3,8,1,"#0e0e0e");
+    px(0,4,3,3,"#232323");
+    px(3,4,5,3,"#2a2a2a");
+    px(0,2,4,1,"#202020");
+    px(4,2,4,1,"#1c1c1c");
+    px(0,6,3,1,"#1c1c1c");
+    px(3,6,5,1,"#202020");
+    px(4,0,1,3,"#0e0e0e");
+    px(3,4,1,3,"#0e0e0e");
 }
     return c;
 }
@@ -546,6 +575,8 @@ const BLOCKS = {
 10: {name: "sand", hits: 2, solid: true},
 11: {name: "sandstone", hits: 4, solid: true},
 12: {name: "water", hits: 3, solid: false},
+13: { name: "gem_soil", hits: 3, solid: true },
+14: { name: "black_brick", hits: 5, solid: true },
 };
 function forceBedrock(x) {
     world[worldHeight - 1][x] = 8;
@@ -572,18 +603,18 @@ function generateTerrain() {
     else if (r < 0.07) world[y][x] = 2;
     else if (r < 0.10) world[y][x] = 7;
     else if (r < 0.15) world[y][x] = 9;
-    else world[y][x] = 1;
+    else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
 }
 else if (depth > 0.55) {
     if (r < 0.04) world[y][x] = 9;
     else if (r < 0.08) world[y][x] = 2;
-    else world[y][x] = 1;
+    else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
 } else if (depth > 0.4) {
                 if (r < 0.05) world[y][x] = 2;
-                else world[y][x] = 1;
+                else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
             } else {
                 if (r < 0.03) world[y][x] = 2;
-                else world[y][x] = 1;
+                else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
             }
             background[y][x] = 3;
         }
@@ -667,6 +698,7 @@ function getSeedResult(a, b){
     const combo = [a, b].sort().join("+");
     if(combo === "cave_bg_seed+soil_seed") return "grass_seed";
     if(combo === "lava_seed+soil_seed") return "wood_seed";
+    if(combo === "obsidian_seed+soil_seed") return "black_brick_seed";
     return null;
 }
 function hasSolidNeighbor(x, y){
@@ -877,6 +909,8 @@ block === 9 ? "marble" :
 block === 10 ? "sand" :
 block === 11 ? "sandstone" :
 block === 12 ? "water" :
+block === 13 ? "gem_soil" :
+block === 14 ? "black_brick" :
 null;
     if(block === 1){
         const above = world[y-1]?.[x];
@@ -948,7 +982,7 @@ function drawPlayer(){
     ctx.fillRect(px,py,player.width*zoom,player.height*zoom);
 }
 function drawGhostBlock() {
-    if (!hotbar.block) return;
+    if (!hotbar.block || hotbar.selected !== 1) return;
     const px = Math.floor(player.x / blockSize);
     const py = Math.floor(player.y / blockSize);
     const range = 3;
@@ -1174,6 +1208,14 @@ else if(type === "sandstone_seed"){
     px(1,1,6,6,"#d2b48c");
     px(3,3,2,2,"#e0c9a6");
 }
+else if(type === "gem_soil_seed"){
+    px(1,1,6,6,"#7a4f2b");
+    px(3,3,2,2,"#00aaff");
+}
+else if(type === "black_brick_seed"){
+    px(1,1,6,6,"#1a1a1a");
+    px(3,3,2,2,"#444");
+}
     border();
     ctx.restore();
 }
@@ -1187,10 +1229,12 @@ function drawSeedCombineHint(){
         const a = tree.type;
         const b = hotbar.block;
         const combo =
-            (a === "soil_seed" && b === "cave_bg_seed") ||
-            (a === "cave_bg_seed" && b === "soil_seed") ||
-            (a === "soil_seed" && b === "lava_seed") ||
-            (a === "lava_seed" && b === "soil_seed");
+    (a === "soil_seed" && b === "cave_bg_seed") ||
+    (a === "cave_bg_seed" && b === "soil_seed") ||
+    (a === "soil_seed" && b === "lava_seed") ||
+    (a === "lava_seed" && b === "soil_seed") ||
+    (a === "soil_seed" && b === "obsidian_seed") ||
+    (a === "obsidian_seed" && b === "soil_seed");
         if(!combo) return;
         const drawX = Math.floor((tree.x * blockSize - camera.x) * zoom);
         const drawY = Math.floor((tree.y * blockSize - camera.y) * zoom);
@@ -1286,7 +1330,9 @@ document.querySelectorAll("#inventoryUI .slot").forEach((el, i) => {
         const item = items[i];
         if(!item) return;
         hotbar.block = item;
-        hotbar.selected = 1;
+if (hotbar.selected !== 0) {
+    return;
+}
         updateHotbar();
     };
 });
@@ -1298,6 +1344,12 @@ document.querySelectorAll("#inventoryUI .slot").forEach(slot=>{
     const count = document.createElement("div");
     count.className = "count";
     slot.appendChild(count);
+});
+document.querySelectorAll("#hotbar .slot").forEach((slot, i) => {
+    slot.onclick = () => {
+        hotbar.selected = i;
+        updateHotbar();
+    };
 });
 function updateInventoryUI(){
     const slots = document.querySelectorAll("#inventoryUI .slot");
@@ -1492,6 +1544,26 @@ else if(item === "sandstone_seed"){
     px(2,2,4,4,"#d2b48c");
     px(3,3,2,2,"#e0c9a6");
 }
+else if(item === "gem_soil"){
+    px(0,0,8,8,"#7a4f2b");
+    px(2,2,1,1,"#00aaff");
+    px(5,3,1,1,"#0088ff");
+    px(4,5,1,1,"#33ccff");
+}
+else if(item === "gem_soil_seed"){
+    px(2,2,4,4,"#7a4f2b");
+    px(3,3,1,1,"#00ffff");
+}
+else if(item === "black_brick"){
+    px(0,0,8,8,"#1a1a1a");
+    px(0,3,8,1,"#111");
+    px(4,0,1,3,"#111");
+    px(3,3,1,3,"#111");
+}
+else if(item === "black_brick_seed"){
+    px(2,2,4,4,"#1a1a1a");
+    px(3,3,2,2,"#444");
+}
 }
 /* DROPS */
 let drops = [];
@@ -1605,6 +1677,22 @@ else if(drop.type === "sandstone_seed"){
     px(2,2,4,4,"#c9a97a");
     px(3,3,2,2,"#d2b48c");
 }
+else if(drop.type === "gem_soil"){
+    px(0,0,8,8,"#7a4f2b");
+    px(2,2,1,1,"#00ffff");
+}
+else if(drop.type === "gem_soil_seed"){
+    px(2,2,4,4,"#7a4f2b");
+    px(3,3,1,1,"#00ffff");
+}
+else if(drop.type === "black_brick"){
+    px(0,0,8,8,"#1a1a1a");
+    px(3,3,2,2,"#333");
+}
+else if(drop.type === "black_brick_seed"){
+    px(2,2,4,4,"#1a1a1a");
+    px(3,3,2,2,"#444");
+}
         ctx.restore();
     });
 }
@@ -1634,6 +1722,8 @@ function startBreaking(mouseX, mouseY, instant = false) {
         else if (tree.type === "water_seed") dropType = "water";
         else if (tree.type === "sand_seed") dropType = "sand";
         else if (tree.type === "sandstone_seed") dropType = "sandstone";
+        else if (tree.type === "gem_soil_seed") dropType = "gem_soil";
+        else if (tree.type === "black_brick_seed") dropType = "black_brick";
         const dropsCount = Math.floor(Math.random() * 6) + 1;
         for (let i = 0; i < dropsCount; i++) {
             spawnDrop(worldX, worldY, dropType);
@@ -1772,6 +1862,18 @@ else if (block === 12) {
     else if (rand < 99) dropSeed = "water_seed";
     else { dropBlock = "water"; dropSeed = "water_seed"; }
 }
+else if (block === 13) {
+    if (rand < 40) {}
+    else if (rand < 80) dropBlock = "gem_soil";
+    else if (rand < 99) dropSeed = "gem_soil_seed";
+    else { dropBlock = "gem_soil"; dropSeed = "gem_soil_seed"; }
+}
+else if (block === 14) {
+    if (rand < 40) {}
+    else if (rand < 80) dropBlock = "black_brick";
+    else if (rand < 99) dropSeed = "black_brick_seed";
+    else { dropBlock = "black_brick"; dropSeed = "black_brick_seed"; }
+}
         if (dropBlock) spawnDrop(x, y, dropBlock);
         if (dropSeed) spawnDrop(x, y, dropSeed);
         if (world[y]?.[x]) world[y][x] = 0;
@@ -1810,14 +1912,18 @@ function placeBlock(mouseX, mouseY) {
         const result = getSeedResult(existingTree.type, item);
         if (!result) return; 
         trees = trees.filter(t => t !== existingTree);
-        trees.push({
-            x: worldX,
-            y: worldY,
-            type: result,
-            stage: 0,
-            plantedAt: Date.now(),
-            growTime: 30000
-        });
+        let growTime = 30000;
+
+if(item === "black_brick_seed") growTime = 60000;
+
+trees.push({
+    x: worldX,
+    y: worldY,
+    type: item,
+    stage: 0,
+    plantedAt: Date.now(),
+    growTime: growTime
+});
         inventory[item]--;
         if (inventory[item] <= 0) {
             inventory[item] = 0;
@@ -1890,6 +1996,8 @@ if (worldCell !== 0) return;
     item === "sand" ? 10 :
     item === "sandstone" ? 11 :
     item === "water" ? 12 :
+    item === "gem_soil" ? 13 :
+    item === "black_brick" ? 14 :
     0;
     inventory[item]--;
     if (inventory[item] <= 0) {
@@ -2036,6 +2144,10 @@ else if(type === "sand_seed"){
 else if(type === "sandstone_seed"){
     px(2,2,4,4,"#d2b48c");
     px(3,3,2,2,"#e0c9a6");
+}
+else if(type === "gem_soil_seed"){
+    px(2,2,4,4,"#7a4f2b");
+    px(3,3,2,2,"#00aaff");
 }
 }
 loop();    
