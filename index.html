@@ -1680,7 +1680,11 @@ if (worldCell !== 0) return;
         playerTop < blockBottom;
     if (overlap) return;
     if(!world[worldY]) world[worldY] = [];
-    inventory[item]--;
+
+const PLACE_MAP = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19};
+const blockId = PLACE_MAP[item];
+if(blockId === undefined) return;world[worldY][worldX] = blockId;
+inventory[item]--;
     if (inventory[item] <= 0) {
         inventory[item] = 0;
         hotbar.block = null;
