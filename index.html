@@ -124,6 +124,7 @@ function generateBlockTexture(type){const c = document.createElement("canvas");c
     function px(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p, y*p, w*p, h*p);}
 if(type === "soil_base" || type === "soil_grass"){px(0,0,8,8,"#7a4f2b");px(1,1,1,1,"#5c3a1f");px(3,2,1,1,"#5c3a1f");px(6,1,1,1,"#5c3a1f");px(2,5,1,1,"#5c3a1f");px(5,6,1,1,"#5c3a1f");px(4,4,1,1,"#9c6b3a");px(7,3,1,1,"#9c6b3a");
 if(type === "soil_grass"){px(0,0,8,2,"#3CBA54");px(1,1,1,1,"#6CFF3C");px(4,0,1,1,"#6CFF3C");px(6,1,1,1,"#6CFF3C");px(1,2,1,1,"#2ecc71");px(3,2,1,1,"#2ecc71");px(6,2,1,1,"#2ecc71");}}
+else if(type === "gem"){px(3,0,2,2,"#bffaff");px(2,1,4,1,"#7fe8ff");px(1,2,6,2,"#00c8e6");px(2,4,4,1,"#009bb3");px(3,5,2,1,"#007a8c");px(3,2,1,1,"#ffffff");}
 else if(type === "granite"){px(0,0,8,8,"#888");px(1,1,1,1,"#666");px(2,3,1,1,"#666");px(5,2,1,1,"#666");px(6,5,1,1,"#666");px(3,6,1,1,"#aaa");px(7,1,1,1,"#aaa");}
 else if(type === "grass"){px(1,5,1,3,"#3CBA54");px(3,4,1,4,"#2ecc71");px(5,5,1,3,"#3CBA54");px(6,4,1,4,"#2ecc71");px(2,6,1,2,"#27ae60");}
 else if(type === "lava"){px(0,0,8,8,"#ff4500");px(1,1,2,2,"#ff7a00");px(4,2,2,2,"#ff7a00");px(2,5,2,2,"#ff7a00");px(3,3,1,1,"#ffff66");px(6,6,1,1,"#ffff66");px(0,7,8,1,"#cc3300");px(0,0,8,1,"#ff5a1a");}
@@ -146,6 +147,29 @@ else if(type === "magic_stuff"){
     px(1,1,1,1,"#ffffff");px(6,2,1,1,"#ffffff");px(3,5,1,1,"#ffffff");}
 else if(type === "metal_plate"){px(0,0,8,8,"#6e737a");px(0,0,8,1,"#8a9098");px(0,7,8,1,"#4f545b");px(0,0,1,8,"#5a5f66");px(7,0,1,8,"#5a5f66");px(2,2,4,4,"#7b818a");px(2,2,4,1,"#9aa1aa");px(2,5,4,1,"#5c6168");px(3,3,2,2,"#b0b6bf");px(0,3,8,1,"#3f444a");px(3,0,1,8,"#3f444a");}
 else if(type === "red_brick"){px(0,0,8,8,"#8c2f2f");px(0,0,4,3,"#a33a3a");px(4,0,4,3,"#7a2727");px(0,3,8,1,"#3b1f1f");px(0,4,3,3,"#7a2727");px(3,4,5,3,"#a33a3a");px(0,2,4,1,"#912f2f");px(4,2,4,1,"#6f2424");px(0,6,3,1,"#6f2424");px(3,6,5,1,"#912f2f");px(4,0,1,3,"#3b1f1f");px(3,4,1,3,"#3b1f1f");}
+else if(type.endsWith("_seed")){const base = type.replace("_seed", "");const p2 = blockSize / 8;
+    function spx(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p2, y*p2, w*p2, h*p2);}ctx.clearRect(0,0,blockSize,blockSize);spx(1,1,6,6,"#111");
+if(base === "soil"){spx(3,1,2,1,"#6b4423");spx(2,2,4,3,"#8B5A2B");spx(3,5,2,1,"#3CBA54");}
+else if(base === "granite"){spx(2,1,4,1,"#999");spx(1,2,6,3,"#777");spx(2,5,4,1,"#bbb");}
+else if(base === "cave_bg"){spx(2,1,4,1,"#4a3320");spx(1,2,6,4,"#2a1d12");}
+else if(base === "grass"){spx(3,1,2,1,"#7CFC00");spx(2,2,4,2,"#3fa34d");spx(1,4,6,1,"#2e6b3a");spx(3,5,2,1,"#9cff57");}
+else if(base === "lava"){spx(3,1,2,1,"#ffff66");spx(2,2,4,2,"#ff7a00");spx(1,4,6,2,"#ff4500");}
+else if(base === "wood"){spx(3,1,2,1,"#A9743A");spx(2,2,4,4,"#8B5A2B");spx(3,3,2,1,"#d18a47");}
+else if(base === "obsidian"){spx(3,1,2,1,"#c084ff");spx(2,2,4,4,"#2e1a4d");spx(3,3,1,1,"#ffffff");}
+else if(base === "bedrock"){spx(2,1,4,1,"#888");spx(1,2,6,4,"#3a3a3a");spx(2,2,1,1,"#777");spx(5,3,1,1,"#999");spx(3,4,1,1,"#555");}
+else if(base === "marble"){spx(2,1,4,1,"#ffffff");spx(1,2,6,4,"#dcdcdc");spx(3,3,2,2,"#ffffff");}
+else if(base === "sand"){spx(2,1,4,1,"#fff2cc");spx(1,2,6,4,"#f7e7b4");}
+else if(base === "sandstone"){spx(2,1,4,1,"#fff0b0");spx(1,2,6,4,"#d9c27a");spx(1,3,6,1,"#c2aa61");spx(2,5,4,1,"#e8d48f");}
+else if(base === "water"){spx(3,1,2,1,"#d8f3ff");spx(1,2,6,1,"#5dade2");spx(2,3,4,1,"#3498db");spx(1,4,6,1,"#2980b9");spx(2,5,4,1,"#85c1e9");}
+else if(base === "gem_soil"){spx(2,1,4,1,"#00ffff");spx(1,2,6,4,"#7a4f2b");spx(3,3,2,2,"#00aaff");}
+else if(base === "black_brick"){spx(2,1,4,1,"#555");spx(1,2,6,4,"#1a1a1a");}
+else if(base === "concrete_block_1x1"){spx(2,1,4,1,"#d0d0d0");spx(1,2,6,4,"#8f8f8f");spx(2,3,1,1,"#bdbdbd");spx(5,4,1,1,"#6f6f6f");}
+else if(base === "glass"){spx(2,1,4,1,"#ffffff");spx(1,2,6,4,"#aeefff");}
+else if(base === "magic_stuff"){spx(3,1,2,1,"#ffffff");spx(2,2,4,1,"#ff00ff");spx(1,3,6,1,"#00ffff");spx(2,4,4,1,"#7dff7d");spx(3,5,2,1,"#ffff00");}
+else if(base === "metal_plate"){spx(2,1,4,1,"#c0c6cf");spx(1,2,6,4,"#6e737a");spx(3,3,2,2,"#9aa1aa");}
+else if(base === "red_brick"){spx(2,1,4,1,"#ff9a9a");spx(1,2,6,4,"#8c2f2f");}
+else{spx(3,1,2,1,"#ffffff");spx(2,2,4,3,"#777");}
+    ctx.strokeStyle = "#FFD700";ctx.lineWidth = 2;ctx.strokeRect(1,1,blockSize-2,blockSize-2);}
     return c;}
 const canvas = document.getElementById("game");  
 const left = document.getElementById("left");
@@ -337,9 +361,9 @@ let playerHealth = 6;
 let keys={left:false,right:false,up:false};    
 document.body.addEventListener("touchstart",(e)=>{if(e.target.tagName==="BUTTON"){    e.preventDefault();    }    },{passive:false});    
 function isSolid(x, y){if(x < 0 || y < 0 || x >= worldWidth || y >= worldHeight) return false;const id = world[y][x];return BLOCKS[id]?.solid || false;}
-function collide() {
+function collide(deltaTime) {
 player.onGround = false;
-player.x += player.velX;
+player.x += player.velX * deltaTime;
 let l = Math.floor(player.x / blockSize);
 let r = Math.floor((player.x + player.width - 0.001) / blockSize);
 let t = Math.floor(player.y / blockSize);
@@ -352,7 +376,7 @@ if (player.velX < 0 && (isSolid(l, t) || isSolid(l, b))) {
 player.x = (l + 1) * blockSize + 0.001;
 player.velX = 0;
 }
-player.y += player.velY;
+player.y += player.velY * deltaTime;
 l = Math.floor(player.x / blockSize);
 r = Math.floor((player.x + player.width - 0.001) / blockSize);
 t = Math.floor(player.y / blockSize);
@@ -425,12 +449,12 @@ function checkLavaCollision() {
         respawnPlayer();
     }
 }
-function updateMovement() {
-    if (keys.left) player.velX -= accel;
-    if (keys.right) player.velX += accel;
+function updateMovement(deltaTime) {
+if (keys.left) player.velX -= accel * deltaTime;
+if (keys.right) player.velX += accel * deltaTime;
     player.velX = Math.max(-maxSpeed, Math.min(maxSpeed, player.velX));
     if (!keys.left && !keys.right) {
-        player.velX *= friction;
+        player.velX *= Math.pow(friction, deltaTime);
         if (Math.abs(player.velX) < 0.05) player.velX = 0;
     }
     if (keys.up && player.onGround && !jumpLock) {
@@ -442,17 +466,17 @@ function updateMovement() {
         jumpLock = false;
     }
     if(isInWater()){
-    player.velY += gravity * 0.2;
-    player.velY *= 0.9;
+    player.velY += gravity * 0.2 * deltaTime;
+    player.velY *= Math.pow(0.9, deltaTime);
     if(keys.up){
         player.velY = -3;
     }
     player.velY = Math.min(player.velY, 3);
 } else {
-    player.velY += gravity;
+    player.velY += gravity * deltaTime;
 }
     if (player.velY > 12) player.velY = 12;
-    collide();
+    collide(deltaTime);
 }
 function updateCamera(){    
     camera.x=Math.max(0,Math.min(    
@@ -505,18 +529,15 @@ null;
         const hasGrass = (above === 0 || above === 3 || above === 4);
         textureKey = hasGrass ? "soil_grass" : "soil_base";
     }
-    if(!blockTextures[textureKey]){
-        blockTextures[textureKey] = generateBlockTexture(textureKey);
-    }
     const drawX = (x * blockSize - camera.x) * zoom;
     const drawY = (y * blockSize - camera.y) * zoom;
-    ctx.drawImage(
-        blockTextures[textureKey],
-        drawX,
-        drawY,
-        blockSize * zoom,
-        blockSize * zoom
-    );
+    drawTexture(
+    ctx,
+    textureKey,
+    drawX,
+    drawY,
+    blockSize * zoom
+);
     if(block === 5){
         for(let i=0;i<2;i++){
             ctx.fillStyle = "rgba(255,200,0,0.4)";
@@ -880,8 +901,8 @@ function drawBreaking(){
         blockSize * zoom
     );
 }
-function update() {
-    updateMovement();
+function update(deltaTime) {
+    updateMovement(deltaTime);
     checkLavaCollision()
     resizeCanvas();
     updateCamera();
@@ -889,11 +910,15 @@ function update() {
     updateDrops();
     if(player.velY < 0) player.onGround = false;
 }
-function loop(){    
-    update();    
-    draw();    
-    requestAnimationFrame(loop);    
-}    
+let lastTime = performance.now();
+function loop(currentTime){
+    let deltaTime = (currentTime - lastTime) / 16.6667;
+    if(deltaTime > 2) deltaTime = 2;
+    lastTime = currentTime;
+    update(deltaTime);
+    draw();
+    requestAnimationFrame(loop);
+}
 const graniteIcon = document.getElementById("graniteIcon");
 let graniteCtx = null;
 if(graniteIcon){
@@ -981,9 +1006,7 @@ function updateInventoryUI(){
 function isInventoryFull(){
     const maxSlots = document.querySelectorAll("#inventoryUI .slot").length;
     const usedSlots = Object.keys(inventory).filter(k => inventory[k] > 0).length;
-
 const hasFreeStack = Object.values(inventory).some(v => v > 0 && v < MAX_STACK);
-
 return usedSlots >= maxSlots && !hasFreeStack;
 }
 function showInventoryFull(){
@@ -1031,189 +1054,24 @@ function updateHotbar() {
         }
     });
 }
+function drawTexture(ctx, textureKey, x, y, size){
+    if(!blockTextures[textureKey]){
+        blockTextures[textureKey] = generateBlockTexture(textureKey);
+    }
+    ctx.drawImage(
+        blockTextures[textureKey],
+        x,
+        y,
+        size,
+        size
+    );
+}
 function drawItemIcon(ctx, item){
-    ctx.clearRect(0,0,40,40);
-    const p = 5;
-    function px(x,y,w,h,color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x*p, y*p, w*p, h*p);
-    }
+    let textureKey = item;
     if(item === "soil"){
-        px(0,2,8,6,"#7a4f2b");
-        px(0,0,8,2,"#3CBA54");
+        textureKey = "soil_grass";
     }
-    else if(item === "granite"){
-        px(0,0,8,8,"#888");
-        px(2,2,1,1,"#666");
-        px(5,3,1,1,"#aaa");
-    }
-    else if(item === "cave_bg"){
-        px(0,0,8,8,"#3b2a1a");
-        px(3,3,1,1,"#2a1d12");
-    }
-    else if(item === "grass"){
-        px(3,2,2,4,"#2ecc71");
-        px(2,4,1,2,"#3CBA54");
-        px(5,4,1,2,"#3CBA54");
-        px(3,1,1,1,"#6CFF3C");
-    }
-    else if(item === "lava"){
-        px(0,0,8,8,"#ff4500");
-        px(2,2,2,2,"#ff7a00");
-        px(3,3,1,1,"#ffff66");
-    }
-    else if(item === "soil_seed"){
-        px(2,2,4,4,"#8B5A2B");
-        px(3,3,2,2,"#A9743A");
-    }
-    else if(item === "granite_seed"){
-        px(2,2,4,4,"#888");
-        px(3,3,2,2,"#bbb");
-    }
-    else if(item === "cave_bg_seed"){
-        px(2,2,4,4,"#3b2a1a");
-        px(3,3,2,2,"#5c3a21");
-    }
-    else if(item === "grass_seed"){
-        px(2,2,4,4,"#2ecc71");
-        px(3,1,2,2,"#6CFF3C");
-    }
-    else if(item === "lava_seed"){
-        px(2,2,4,4,"#ff4500");
-        px(3,3,2,2,"#ffff66");
-    }
-    else if(item === "wood"){
-    px(0,0,8,8,"#8B5A2B");
-    px(0,0,8,1,"#A9743A");
-    px(0,7,8,1,"#5c3a1f");
-    px(2,2,4,1,"#A9743A");
-    px(1,4,6,1,"#6e3f1a");
-    }
-    else if(item === "wood_seed"){
-    px(2,2,4,4,"#8B5A2B");
-    px(3,3,2,2,"#c68642");
-    }
-    else if(item === "obsidian"){
-    px(0,0,8,8,"#1b1024");
-    px(2,2,4,4,"#2e1a4d");
-    px(3,3,1,1,"#9b5cff");
-}
-else if(item === "obsidian_seed"){
-    px(2,2,4,4,"#2e1a4d");
-    px(3,3,2,2,"#7a3cff");
-}
-else if(item === "marble"){
-    px(0,0,8,8,"#f2f2f2");
-    px(3,3,2,2,"#d9d9d9");
-}
-else if(item === "marble_seed"){
-    px(2,2,4,4,"#e6e6e6");
-    px(3,3,2,2,"#ffffff");
-}
-else if(item === "water"){
-    px(0,0,8,8,"#1f6fb2");
-    px(1,1,6,6,"#2e86c1");
-    px(2,2,4,4,"#5dade2");
-    px(3,4,2,1,"#a9d6ff");
-    px(2,5,4,1,"#85c1e9");
-}
-else if(item === "sand"){
-    px(0,0,8,8,"#f4e3a6");
-    px(1,1,1,1,"#e6d28f");
-    px(3,2,1,1,"#e1cc84");
-    px(6,3,1,1,"#d9c476");
-    px(2,5,1,1,"#e8d89a");
-    px(5,6,1,1,"#d2bf6a");
-}
-else if(item === "sandstone"){
-    px(0,0,8,8,"#c9a97a");
-    px(1,1,6,6,"#b89466");
-    px(2,2,4,4,"#d2b48c");
-    px(3,3,2,2,"#e0c39a");
-    px(1,6,6,1,"#a67c52");
-}
-else if(item === "water_seed"){
-    px(2,2,4,4,"#3498db");
-    px(3,3,2,2,"#85c1e9");
-}
-else if(item === "sand_seed"){
-    px(2,2,4,4,"#f7e7b4");
-    px(3,3,2,2,"#fff2cc");
-}
-else if(item === "sandstone_seed"){
-    px(2,2,4,4,"#d2b48c");
-    px(3,3,2,2,"#e0c9a6");
-}
-else if(item === "gem_soil"){
-    px(0,0,8,8,"#7a4f2b");
-    px(2,2,1,1,"#00aaff");
-    px(5,3,1,1,"#0088ff");
-    px(4,5,1,1,"#33ccff");
-}
-else if(item === "gem_soil_seed"){
-    px(2,2,4,4,"#7a4f2b");
-    px(3,3,1,1,"#00ffff");
-}
-else if(item === "black_brick"){
-    px(0,0,8,8,"#1a1a1a");
-    px(0,3,8,1,"#111");
-    px(4,0,1,3,"#111");
-    px(3,3,1,3,"#111");
-}
-else if(item === "black_brick_seed"){
-    px(2,2,4,4,"#1a1a1a");
-    px(3,3,2,2,"#444");
-}
-else if(item === "concrete_block_1x1"){
-    px(0,0,8,8,"#bfbfbf");
-    px(2,2,1,1,"#8c8c8c");
-    px(5,3,1,1,"#e0e0e0");
-}
-else if(item === "concrete_block_1x1_seed"){
-    px(2,2,4,4,"#bfbfbf");
-    px(3,3,2,2,"#e0e0e0");
-}
-else if(item === "glass"){
-    px(0,0,8,8,"#aeefff");
-    px(2,2,1,1,"#ffffff");
-    px(5,3,1,1,"#dff9ff");
-}
-else if(item === "glass_seed"){
-    px(2,2,4,4,"#aeefff");
-    px(3,3,2,2,"#ffffff");
-}
-else if(item === "magic_stuff"){
-    const colors = ["#ff0000","#ff7f00","#ffff00","#00ff00","#0000ff","#8f00ff"];
-    for(let i = 0; i < 6; i++){
-        px(0,i+1,8,1,colors[i]);
-    }
-}
-
-else if(item === "magic_stuff_seed"){
-    px(2,2,4,4,"#ffffff");
-    px(3,3,2,2,"#ff00ff");
-    px(2,3,1,1,"#00ffff");
-}
-else if(item === "metal_plate"){
-    px(0,0,8,8,"#6e737a");
-    px(0,3,8,1,"#3f444a");
-    px(3,0,1,8,"#3f444a");
-    px(2,2,4,4,"#8a9098");
-}
-else if(item === "metal_plate_seed"){
-    px(2,2,4,4,"#5f646b");
-    px(3,3,2,2,"#c0c6cf");
-}
-else if(item === "red_brick"){
-    px(0,0,8,8,"#8c2f2f");
-    px(0,3,8,1,"#4a2222");
-    px(4,0,1,3,"#4a2222");
-    px(3,3,1,3,"#4a2222");
-}
-else if(item === "red_brick_seed"){
-    px(2,2,4,4,"#8c2f2f");
-    px(3,3,2,2,"#d65a5a");
-}
+    drawTexture(ctx, textureKey, 0, 0, 40);
 }
 let drops = [];
 function spawnDrop(x, y, type) {
@@ -1253,7 +1111,6 @@ if (drop.type === "gem") {
     if(inventory[drop.type] < MAX_STACK){
     inventory[drop.type]++;
 } else {
-    // stack pełny → nie zbieraj
     showInventoryFull();
     return;
 }
@@ -1281,157 +1138,18 @@ function drawDrops() {
             ctx.fillStyle = color;
             ctx.fillRect(x*p, y*p, w*p, h*p);
         }
-        if(drop.type.includes("_seed")){
-            drawSeedIcon(ctx, drop.type);
-        }
-        else if(drop.type === "gem"){
-    px(3,0,2,2,"#bffaff");
-    px(2,1,4,1,"#7fe8ff");
-    px(1,2,6,2,"#00c8e6");
-    px(2,4,4,1,"#009bb3");
-    px(3,5,2,1,"#007a8c");
-    px(3,2,1,1,"#ffffff");
-}
-        else if(drop.type === "lava"){
-            px(0,0,8,8,"#ff4500");
-            px(2,2,2,2,"#ff7a00");
-            px(3,3,1,1,"#ffff66");
-        }
-        else if(drop.type === "grass"){
-            px(3,2,2,4,"#2ecc71");
-            px(2,4,1,2,"#3CBA54");
-            px(5,4,1,2,"#3CBA54");
-        }
-        else if(drop.type === "soil"){
-            px(0,2,8,6,"#7a4f2b");
-            px(0,0,8,2,"#3CBA54");
-        }
-        else if(drop.type === "granite"){
-            px(0,0,8,8,"#888");
-            px(2,2,1,1,"#666");
-        }
-        else if(drop.type === "cave_bg"){
-            px(0,0,8,8,"#3b2a1a");
-            px(3,3,1,1,"#2a1d12");
-        }
-        else if(drop.type === "wood"){
-    px(0,0,8,8,"#8B5A2B");
-    px(2,2,4,1,"#A9743A");
-}
-else if(drop.type === "obsidian"){
-    px(0,0,8,8,"#1b1024");
-    px(2,2,4,4,"#2e1a4d");
-    px(3,3,1,1,"#9b5cff");
-}
-else if(drop.type === "marble"){
-    px(0,0,8,8,"#f2f2f2");
-    px(3,3,1,1,"#d9d9d9");
-}
-else if(drop.type === "water"){
-    px(0,0,8,8,"#1f6fb2");
-    px(2,2,4,4,"#5dade2");
-    px(3,4,2,1,"#a9d6ff");
-}
-else if(drop.type === "sand"){
-    px(0,0,8,8,"#f4e3a6");
-    px(2,2,4,4,"#e6d28f");
-}
-else if(drop.type === "sandstone"){
-    px(0,0,8,8,"#c9a97a");
-    px(2,2,4,4,"#d2b48c");
-}
-else if(drop.type === "water_seed"){
-    px(2,2,4,4,"#1f6fb2");
-    px(3,3,2,2,"#85c1e9");
-}
-else if(drop.type === "sand_seed"){
-    px(2,2,4,4,"#f4e3a6");
-    px(3,3,2,2,"#e6d28f");
-}
-else if(drop.type === "sandstone_seed"){
-    px(2,2,4,4,"#c9a97a");
-    px(3,3,2,2,"#d2b48c");
-}
-else if(drop.type === "gem_soil"){
-    px(0,0,8,8,"#7a4f2b");
-    px(2,2,1,1,"#00ffff");
-}
-else if(drop.type === "gem_soil_seed"){
-    px(2,2,4,4,"#7a4f2b");
-    px(3,3,1,1,"#00ffff");
-}
-else if(drop.type === "black_brick"){
-    px(0,0,8,8,"#121212");
-    px(1,1,2,2,"#1f1f1f");
-    px(4,1,2,2,"#242424");
-    px(1,4,2,2,"#1b1b1b");
-    px(4,4,2,2,"#202020");
-    px(3,2,1,1,"#3a3a3a");
-}
-else if(drop.type === "black_brick_seed"){
-    px(2,2,4,4,"#0f0f0f");
-    px(3,1,2,2,"#2a2a2a");
-    px(1,3,2,2,"#1c1c1c");
-    px(4,4,2,2,"#3a3a3a");
-    px(3,3,1,1,"#8b5cff");
-}
-else if(drop.type === "concrete_block_1x1"){
-    px(0,0,8,8,"#bfbfbf");
-    px(3,3,1,1,"#8c8c8c");
-}
-else if(drop.type === "concrete_block_1x1_seed"){
-    px(2,2,4,4,"#bfbfbf");
-    px(3,3,1,1,"#e0e0e0");
-}
-else if(drop.type === "glass"){
-    px(0,0,8,8,"#aeefff");
-    px(3,3,1,1,"#ffffff");
-}
-else if(drop.type === "glass_seed"){
-    px(2,2,4,4,"#aeefff");
-    px(3,3,1,1,"#ffffff");
-}
-else if(drop.type === "magic_stuff"){
-    const colors = ["#ff0000","#ff7f00","#ffff00","#00ff00","#0000ff","#8f00ff"];
-    for(let i = 0; i < 6; i++){
-        px(0,i+1,8,1,colors[i]);
-    }
+        let textureKey = drop.type;
+if(drop.type === "soil"){
+    textureKey = "soil_grass";
 }
 
-else if(drop.type === "magic_stuff_seed"){
-    px(2,2,4,4,"#ffffff");
-    px(3,3,2,2,"#ff00ff");
-}
-else if(drop.type === "metal_plate"){
-    px(0,0,8,8,"#5a5f66");
-    px(1,1,2,2,"#7a8088");
-    px(4,1,2,2,"#8a9098");
-    px(1,4,2,2,"#6a7078");
-    px(4,4,2,2,"#7f858d");
-    px(3,3,2,2,"#c0c6cf");
-}
-else if(drop.type === "metal_plate_seed"){
-    px(2,2,4,4,"#4f545b");
-    px(3,1,2,2,"#7a8088");
-    px(1,3,2,2,"#6a7078");
-    px(4,4,2,2,"#9aa1aa");
-    px(3,3,1,1,"#c0c6cf");
-}
-else if(drop.type === "red_brick"){
-    px(0,0,8,8,"#6f2424");
-    px(1,1,2,2,"#a33a3a");
-    px(4,1,2,2,"#7a2727");
-    px(1,4,2,2,"#8c2f2f");
-    px(4,4,2,2,"#912f2f");
-    px(3,2,1,1,"#d65a5a");
-}
-else if(drop.type === "red_brick_seed"){
-    px(2,2,4,4,"#7a2a2a");
-    px(3,1,2,2,"#b84444");
-    px(1,3,2,2,"#8c2f2f");
-    px(4,4,2,2,"#a33a3a");
-    px(3,3,1,1,"#ff9a9a");
-}
+drawTexture(
+    ctx,
+    textureKey,
+    0,
+    0,
+    s
+);
         ctx.restore();
     });
 }
@@ -1457,14 +1175,9 @@ if(tree.type.endsWith("_seed")){
 }
 if(!dropType) return;
         const dropsCount = Math.floor(Math.random() * 6) + 1;
-        for (let i = 0; i < dropsCount; i++) {
-            spawnDrop(worldX, worldY, dropType);
-        }
+        for (let i = 0; i < dropsCount; i++) {spawnDrop(worldX, worldY, dropType);}
         trees = trees.filter(t => t !== tree);
-        if (px === worldX && py === worldY) {
-            player.y -= blockSize;
-            player.velY = -2;
-        }
+        if (px === worldX && py === worldY) {player.y -= blockSize;player.velY = -2;}
         updateInventoryUI();
         updateHotbar();
         breaking = null;
@@ -1507,27 +1220,14 @@ function updateBreaking() {
     const now = Date.now();
     const { x, y } = breaking;
     let block = world[y]?.[x];
-    if (!block || block === 0) {
-        block = background[y]?.[x];
-    }
-    if (!block || block === 0) {
-        breaking = null;
-        return;
-    }
-    if (block === 8) {
-        breaking = null;
-        return;
-    }
+    if (!block || block === 0) {block = background[y]?.[x];}
+    if (!block || block === 0) {breaking = null;return;}
+    if (block === 8) {breaking = null;return;}
     breaking.maxProgress = BLOCKS[block]?.hits || 2;
-    if (isBreakingHeld && now - breaking.lastHitTime >= 200) {
-        breaking.progress++;
-        breaking.lastHitTime = now;
-    }
+    if (isBreakingHeld && now - breaking.lastHitTime >= 200) {breaking.progress++;breaking.lastHitTime = now;}
     if (breaking.progress < breaking.maxProgress) return;
     const gemChance = block === 13 ? 1 : 0.4;
-    if (Math.random() < gemChance) {
-        spawnDrop(x, y, "gem");
-    }
+    if (Math.random() < gemChance) {spawnDrop(x, y, "gem");}
     updateGemsUI();
     const rand = Math.random() * 100;
     const DROP_MAP = {
@@ -1553,17 +1253,7 @@ function updateBreaking() {
     const cfg = DROP_MAP[block];
     let dropBlock = null;
     let dropSeed = null;
-    if (cfg) {
-        const r = Math.random() * 100;
-        if (r >= cfg.nothing) {
-            const mid = cfg.nothing + cfg.blockChance;
-            if (r < mid) {
-                dropBlock = cfg.block;
-            } else {
-                dropSeed = cfg.seed;
-            }
-        }
-    }
+    if (cfg) {const r = Math.random() * 100;if (r >= cfg.nothing) {const mid = cfg.nothing + cfg.blockChance;if (r < mid) {dropBlock = cfg.block;} else {dropSeed = cfg.seed;}}}
     if (dropBlock) spawnDrop(x, y, dropBlock);
     if (dropSeed) spawnDrop(x, y, dropSeed);
     if (world[y]?.[x]) world[y][x] = 0;
@@ -1585,12 +1275,7 @@ function placeBlock(mouseX, mouseY) {
 const dx = worldX - px;
 const dy = worldY - py;
 if(dx*dx + dy*dy > 9) return;
-    if (!hotbar.block || !inventory[hotbar.block] || inventory[hotbar.block] <= 0) {
-        hotbar.block = null;
-        hotbar.selected = 0;
-        updateHotbar();
-        return;
-    }
+    if (!hotbar.block || !inventory[hotbar.block] || inventory[hotbar.block] <= 0) {hotbar.block = null;hotbar.selected = 0;updateHotbar();return;}
     const item = hotbar.block;
     const isSeed = item.includes("_seed");
     const isBg = item === "cave_bg";
@@ -1604,26 +1289,9 @@ if(dx*dx + dy*dy > 9) return;
         const result = getSeedResult(existingTree.type, item);
         if (!result) return;
         trees = trees.filter(t => t !== existingTree);
-        trees.push({
-            x: worldX,
-            y: worldY,
-            type: result,
-            stage: 0,
-            plantedAt: Date.now(),
-            growTime:
-    item === "concrete_block_1x1_seed" ? 60000 :
-    item === "glass_seed" ? 60000 :
-    item === "magic_stuff_seed" ? 60000 :
-    item === "metal_plate_seed" ? 60000 :
-    item === "red_brick_seed" ? 60000 :
-    30000
-        });
+        trees.push({x: worldX,y: worldY,type: result,stage: 0,plantedAt: Date.now(),growTime:item === "concrete_block_1x1_seed" ? 60000 :item === "glass_seed" ? 60000 :item === "magic_stuff_seed" ? 60000 :item === "metal_plate_seed" ? 60000 :item === "red_brick_seed" ? 60000 :30000});
         inventory[item]--;
-        if (inventory[item] <= 0) {
-            inventory[item] = 0;
-            hotbar.block = null;
-            hotbar.selected = 0;
-        }
+        if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}
         updateInventoryUI();
         updateHotbar();
         return;
@@ -1649,20 +1317,7 @@ if(dx*dx + dy*dy > 9) return;
     updateHotbar();
     return;
 }
-    if (isBg) {
-        if (!background[worldY]) background[worldY] = [];
-        if (bgCell !== 0) return;
-        background[worldY][worldX] = 3;
-        inventory[item]--;
-        if (inventory[item] <= 0) {
-            inventory[item] = 0;
-            hotbar.block = null;
-            hotbar.selected = 0;
-        }
-        updateInventoryUI();
-        updateHotbar();
-        return;
-    }
+    if (isBg) {if (!background[worldY]) background[worldY] = [];if (bgCell !== 0) return;background[worldY][worldX] = 3;inventory[item]--;if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}updateInventoryUI();updateHotbar();return;}
 if (existingTree) return;
 if (worldCell !== 0) return;
     const blockLeft = worldX * blockSize;
@@ -1685,98 +1340,11 @@ const PLACE_MAP = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marbl
 const blockId = PLACE_MAP[item];
 if(blockId === undefined) return;world[worldY][worldX] = blockId;
 inventory[item]--;
-    if (inventory[item] <= 0) {
-        inventory[item] = 0;
-        hotbar.block = null;
-        hotbar.selected = 0;
-    }
+    if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}
     updateInventoryUI();
     updateHotbar();
 }
-function drawSoilIcon(ctx){
-    ctx.clearRect(0,0,40,40);
-    const p = 5;
-    function px(x,y,w,h,color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x*p, y*p, w*p, h*p);
-    }
-    px(0,0,8,8,"#7a4f2b");
-    px(0,0,8,2,"#3CBA54");
-    px(3,3,1,1,"#5c3a1f");
-}
-function drawGraniteIcon(ctx){
-    ctx.clearRect(0,0,40,40);
-    const p = 5;
-    function px(x,y,w,h,color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x*p, y*p, w*p, h*p);
-    }
-    px(0,0,8,8,"#888");
-    px(2,2,1,1,"#666");
-    px(5,3,1,1,"#aaa");
-}
-function drawCaveBgIcon(ctx){
-    ctx.clearRect(0,0,40,40);
-    const p = 5;
-    function px(x,y,w,h,color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x*p,y*p,w*p,h*p);
-    }
-    px(0,0,8,8,"#3b2a1a");
-    px(1,1,1,1,"#2a1d12");
-    px(3,2,1,1,"#2a1d12");
-    px(6,3,1,1,"#2a1d12");
-    px(2,5,1,1,"#4a3320");
-    px(5,6,1,1,"#4a3320");
-    px(0,7,8,1,"rgba(0,0,0,0.3)");
-    px(0,0,8,1,"rgba(255,255,255,0.05)");
-}
-function drawGrassIcon(ctx){
-    ctx.clearRect(0,0,40,40);
-    const p = 5; 
-    function px(x,y,w,h,color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x*p,y*p,w*p,h*p);
-    }
-    px(3,5,1,3,"#3CBA54");
-    px(5,4,1,4,"#2ecc71");
-    px(1,5,1,3,"#27ae60");
-    px(6,4,1,4,"#2ecc71");
-    px(2,6,1,2,"#27ae60");
-    px(3,4,1,1,"#6CFF3C");
-}
-function drawLavaBlock(x, y) {
-    const drawX = (x * blockSize - camera.x) * zoom;const drawY = (y * blockSize - camera.y) * zoom;const gradient = ctx.createLinearGradient(drawX, drawY, drawX, drawY + blockSize * zoom);
-    gradient.addColorStop(0, "#ff4500");gradient.addColorStop(0.5, "#ff6347");gradient.addColorStop(1, "#b22222");ctx.fillStyle = gradient;ctx.fillRect(drawX, drawY, blockSize * zoom, blockSize * zoom);const flameCount = 4;
-    for (let i = 0; i < flameCount; i++) {const fx = drawX + Math.random() * blockSize * zoom;const fy = drawY + Math.random() * blockSize * zoom * 0.5;const fw = 4 + Math.random() * 4;const fh = 4 + Math.random() * 8;ctx.fillStyle = "rgba(255, 140, 0," + (0.5 + Math.random() * 0.5) + ")";ctx.fillRect(fx, fy, fw, fh);}
-}
-function drawLavaIcon(ctx){
-    ctx.clearRect(0,0,40,40);const p = 5;
-    function px(x,y,w,h,color){ctx.fillStyle = color;
-    ctx.fillRect(x*p, y*p, w*p, h*p);
-    }px(0,0,8,8,"#ff4500");px(1,1,2,2,"#ff7a00");px(4,2,2,2,"#ff7a00");px(2,5,2,2,"#ff7a00");px(3,3,1,1,"#ffff66");px(6,6,1,1,"#ffff66");
-}
-function drawSeedIcon(ctx, type){
-    ctx.clearRect(0,0,40,40);const p = 5; 
-    function px(x,y,w,h,color){ctx.fillStyle = color; ctx.fillRect(x*p, y*p, w*p, h*p);}
-    if(type === "soil_seed"){px(2,2,4,4,"#8B5A2B"); px(3,3,2,2,"#A9743A");}
-    else if(type === "granite_seed"){px(2,2,4,4,"#888"); px(3,3,2,2,"#bbb");}
-    else if(type === "cave_bg_seed"){px(2,2,4,4,"#3b2a1a");px(3,3,2,2,"#5c3a21");}
-    else if(type === "grass_seed"){px(2,2,4,4,"#2ecc71");px(3,1,2,2,"#6CFF3C");}
-    else if(type === "lava_seed"){px(2,2,4,4,"#ff4500");px(3,3,2,2,"#ffff66");}
-    else if(type === "wood_seed"){px(2,2,4,4,"#8B5A2B");px(3,3,2,2,"#c68642");}
-    else if(type === "obsidian_seed"){px(2,2,4,4,"#2e1a4d");px(3,3,2,2,"#7a3cff");}
-    else if(type === "marble_seed"){px(2,2,4,4,"#e6e6e6");px(3,3,2,2,"#ffffff");}
-    else if(type === "water_seed"){px(2,2,4,4,"#3498db");px(3,3,2,2,"#85c1e9");}
-    else if(type === "sand_seed"){px(2,2,4,4,"#f7e7b4");px(3,3,2,2,"#fff2cc");}
-    else if(type === "sandstone_seed"){px(2,2,4,4,"#d2b48c");px(3,3,2,2,"#e0c9a6");}
-    else if(type === "gem_soil_seed"){px(2,2,4,4,"#7a4f2b");px(3,3,2,2,"#00aaff");}
-    else if(type === "black_brick_seed"){px(2,2,4,4,"#1a1a1a");px(3,3,2,2,"#444");}
-    else if(type === "concrete_block_1x1_seed"){px(2,2,4,4,"#bfbfbf");px(3,3,2,2,"#e0e0e0");px(2,4,1,1,"#8c8c8c");}
-    else if(type === "glass_seed"){px(2,2,4,4,"#aeefff");px(3,3,2,2,"#ffffff");}
-    else if(type === "red_brick_seed"){px(2,2,4,4,"#8c2f2f");px(3,3,2,2,"#d65a5a");}
-}
-loop();    
+requestAnimationFrame(loop);
 </script>    
 </body>    
 </html>
