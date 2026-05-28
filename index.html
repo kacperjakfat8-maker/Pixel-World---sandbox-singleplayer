@@ -23,42 +23,83 @@ button {width: 80px;height: 80px;font-size: 28px;border-radius: 12px;border: 2px
 #controls {position: fixed;bottom: 10px;width: 100%;display: flex;justify-content: space-between;padding: 0 20px;z-index: 110;}
 #leftControls {display: flex;gap: 10px;}
 #toggleHotbar {position: fixed;bottom: 70px;left: 50%;transform: translateX(-50%);width: 60px;height: 30px;border-radius: 10px;border: none;background: rgba(255,255,255,0.2);color: white;font-size: 16px;z-index: 120;}
-#soilIcon, #graniteIcon {width: 40px;height: 40px;display: none;}
-    button {width: 60px;height: 60px;font-size: 22px;}
-    .slot {width: 50px;height: 50px;}
-    .inventorySlots .slot {width: 50px;height: 50px;}
+#soilIcon, #graniteIcon {width: 40px;height: 40px;display: none;}button {width: 60px;height: 60px;font-size: 22px;}.slot {width: 50px;height: 50px;}.inventorySlots .slot {width: 50px;height: 50px;}
+#chatButton{position: fixed;top: 75px;right: 15px;width: 50px;height: 50px;background: rgba(0,0,0,0.7);border-radius: 10px;display: flex;align-items: center;justify-content: center;font-size: 28px;color: white;z-index: 1000;}
+#chatPanel{position: fixed;top: 135px;right: 15px;width: 260px;background: rgba(0,0,0,0.92);border-radius: 12px;padding: 10px;display: none;flex-direction: column;gap: 10px;z-index: 1000;}
+#chatMessages{position: fixed;top: -220px;left: 50%;transform: translateX(-50%);width: min(95%, 500px);max-height: 200px;overflow: hidden;display: flex;flex-direction: column;gap: 6px;padding: 12px;background: rgba(0,0,0,0.85);border-radius: 0 0 16px 16px;backdrop-filter: blur(6px);transition: top 0.35s ease;z-index: 2000;pointer-events: none;}
+.chatMessage{color: white;font: 16px Arial;word-break: break-word;text-shadow: 0 0 4px black;}
+#chatInput{width: 100%;height: 40px;border: none;border-radius: 8px;padding: 8px;font-size: 16px;outline: none;}
+#sendChat{width: 100%;height: 45px;border: none;border-radius: 8px;background: #2ecc71;color: white;font-size: 18px;}
 </style>    </head>    
-<body>    <canvas id="game"></canvas>
-</div>
+<div id="chatMessages"></div><body><canvas id="game"></canvas></body>
 <div id="uiContainer">
-    <div id="hotbar">
-    <div class="slot selected" id="slot0"></div>
-    <div class="slot" id="slot1">
-        <canvas id="soilIcon" width="40" height="40"></canvas>
-        <canvas id="graniteIcon" width="40" height="40"></canvas>
-    </div>
-    <div class="slot" id="slot2"></div>
+<div id="hotbar">
+<div class="slot selected" id="slot0"></div>
+<div class="slot" id="slot1"><canvas id="soilIcon" width="40" height="40"></canvas><canvas id="graniteIcon" width="40" height="40"></canvas></div>
+<div class="slot" id="slot2"></div>
 </div>
-    <div id="inventoryUI">
-        <div class="inventorySlots"><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-        </div>
-    </div>
+<div id="inventoryUI">
+<div class="inventorySlots">
+<div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
 </div>
-<div id="controls">    
-    <div id="leftControls">    <button id="left">←</button> <button id="right">→</button>
-    </div>    
-    <button id="jump">↑</button>    
-</div>    <button id="toggleHotbar"></button>
-<div id="menuButton">
-    <div></div>
-    <div></div>
-    <div></div>
 </div>
-
+</div>
+<div id="controls">
+<div id="leftControls"><button id="left">←</button><button id="right">→</button></div>
+<button id="jump">↑</button>
+</div>
+<button id="toggleHotbar"></button>
+<div id="menuButton"><div></div><div></div><div></div></div>
+<div id="chatButton">💬</div>
+<div id="chatPanel">
+<input type="text" id="chatInput" maxlength="60" placeholder="Write a message...">
+<button id="sendChat">Send</button>
+</div>
 <div id="menuPanel">
-    <div id="menuContent">
-        <h1>MENU</h1>
-    </div>
+<div id="menuContent">
+<div id="mainMenu">
+<h1>MENU</h1>
+<button id="shopBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Shop</button>
+<button id="accountSettingsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Account Settings</button>
+</div>
+<div id="shopPanel" style="display:none;padding:20px;color:white;text-align:left;">
+<h1 style="font-size:32px;">SHOP</h1>
+<div style="margin-top:25px;opacity:0.6;font-size:18px;">
+<div style="background:rgba(255,255,255,0.08);border:2px solid gold;border-radius:14px;padding:15px;margin-top:20px;">
+<div style="font-size:24px;color:#FFD700;font-weight:bold;">🔒 World Lock</div>
+<div style="margin-top:8px;font-size:17px;opacity:0.9;">Protect your world and become the owner.</div>
+<div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 250 Gems</div>
+<button id="buyWorldLockBtn" style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#f1c40f;color:black;border:none;border-radius:10px;">Buy</button>
+</div>
+</div>
+<button id="backFromShopBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button>
+</div>
+<div id="accountSettingsPanel" style="display:none;padding:20px;color:white;text-align:left;">
+<h1 style="font-size:32px;">Account Settings</h1>
+<div style="margin-top:20px;font-size:20px;">Player Name:</div>
+<input id="playerNameInput" type="text" maxlength="20" placeholder="Enter name..." style="width:100%;height:50px;margin-top:10px;border:none;border-radius:10px;padding:10px;font-size:20px;">
+<button id="backToMenuBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button>
+<div style="margin-top:25px;opacity:0.6;font-size:18px;">More features coming later...</div>
+</div>
+</div>
+</div>
+<div id="worldLockPanel" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:85%;max-width:420px;background:rgba(20,20,20,0.97);border-radius:20px;padding:20px;display:none;z-index:5000;color:white;">
+<h1 style="margin:0;font-size:34px;text-align:center;">🔒 World Lock</h1>
+<div style="margin-top:25px;">
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:22px;margin-bottom:20px;">
+<span>Public World</span>
+<input type="checkbox" id="publicWorldToggle">
+</div>
+<div style="font-size:22px;margin-bottom:10px;">World Background</div>
+<select id="worldBackgroundSelect" style="width:100%;height:50px;font-size:20px;border-radius:10px;padding:5px;">
+<option value="day">Day</option>
+<option value="night">Night</option>
+<option value="snowy">Snowy</option>
+<option value="rain">Rain</option>
+</select>
+<button style="width:100%;height:55px;margin-top:20px;font-size:22px;background:#444;color:white;border:none;border-radius:12px;" disabled>Little Scary ;)</button>
+<button id="closeWorldLockPanel" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Close</button>
+</div>
 </div>
 <script>    
 let map = [];
@@ -67,42 +108,93 @@ let height = 100;
 let spawnY = 0;
 let isBreakingHeld = false;
 let gems = 0;
-let hotbar = {
-    selected: 0,
-    block: null
-};
-let inventory = {soil: 0,granite: 0,cave_bg: 0,grass: 0,wood: 0,obsidian: 0,marble: 0,water: 0,sand: 0,sandstone: 0,gem_soil: 0,black_brick: 0,concrete_block_1x1: 0,glass: 0,magic_stuff: 0,metal_plate: 0,red_brick: 0,soil_seed: 0,granite_seed: 0,cave_bg_seed: 0,grass_seed: 0,wood_seed: 0,obsidian_seed: 0,marble_seed: 0,water_seed: 0,sand_seed: 0,sandstone_seed: 0,gem_soil_seed: 0,black_brick_seed: 0,concrete_block_1x1_seed: 0,glass_seed: 0,magic_stuff_seed: 0,metal_plate_seed: 0,red_brick_seed: 0};
+let playerChat = "";
+let playerChatTime = 0;
+let worldOwner = null;
+let worldLockPos = null;
+let worldPublic = false;
+let worldBackground = "day";
+let worldLockMenuOpen = false;
+let inMenu = false;
+let hotbar = {selected: 0,block: null};
+let inventory = {soil: 0,granite: 0,cave_bg: 0,grass: 0,wood: 0,obsidian: 0,marble: 0,water: 0,sand: 0,sandstone: 0,gem_soil: 0,black_brick: 0,concrete_block_1x1: 0,glass: 0,magic_stuff: 0,metal_plate: 0,red_brick: 0,soil_seed: 0,granite_seed: 0,cave_bg_seed: 0,grass_seed: 0,wood_seed: 0,obsidian_seed: 0,marble_seed: 0,water_seed: 0,sand_seed: 0,sandstone_seed: 0,gem_soil_seed: 0,black_brick_seed: 0,concrete_block_1x1_seed: 0,glass_seed: 0,magic_stuff_seed: 0,metal_plate_seed: 0,red_brick_seed: 0,world_lock: 0,};
 let inventoryFullMessageTime = 0;
 let trees = [];
 const blockTextures = {};
 const MAX_STACK = 500;
 const menuButton = document.getElementById("menuButton");
 const menuPanel = document.getElementById("menuPanel");
-menuButton.addEventListener("click", () => {
-    if(menuPanel.style.display === "none" || menuPanel.style.display === ""){
-        menuPanel.style.display = "block";
-    } else {
-        menuPanel.style.display = "none";
-    }
-});
+const chatButton = document.getElementById("chatButton");
+const chatPanel = document.getElementById("chatPanel");
+const chatInput = document.getElementById("chatInput");
+const sendChat = document.getElementById("sendChat");
+const chatMessages = document.getElementById("chatMessages");
+let playerName =localStorage.getItem("playerName") || "";
+const accountSettingsBtn =document.getElementById("accountSettingsBtn");
+const shopBtn =document.getElementById("shopBtn");
+const accountSettingsPanel =document.getElementById("accountSettingsPanel");
+const shopPanel =document.getElementById("shopPanel");
+const mainMenu =document.getElementById("mainMenu");
+const backToMenuBtn =document.getElementById("backToMenuBtn");
+const backFromShopBtn =document.getElementById("backFromShopBtn");
+const playerNameInput =document.getElementById("playerNameInput");
+const buyWorldLockBtn =
+document.getElementById("buyWorldLockBtn");
+const worldLockPanel =
+document.getElementById("worldLockPanel");
+
+const publicWorldToggle =
+document.getElementById("publicWorldToggle");
+
+const worldBackgroundSelect =
+document.getElementById("worldBackgroundSelect");
+
+const closeWorldLockPanel =
+document.getElementById("closeWorldLockPanel");
+accountSettingsBtn.addEventListener("touchstart",(e) => {e.preventDefault();mainMenu.style.display = "none";accountSettingsPanel.style.display = "block";},{ passive:false });
+backToMenuBtn.addEventListener("touchstart",(e) => {e.preventDefault();accountSettingsPanel.style.display = "none";mainMenu.style.display = "block";},{ passive:false });
+playerNameInput.value = playerName;
+shopBtn.addEventListener("touchstart",(e) => {e.preventDefault();mainMenu.style.display = "none";shopPanel.style.display = "block";},{ passive:false });
+backFromShopBtn.addEventListener("touchstart",(e) => {e.preventDefault();shopPanel.style.display = "none";mainMenu.style.display = "block";},{ passive:false });
+shopBtn.onclick = () => {mainMenu.style.display = "none";shopPanel.style.display = "block";};
+backFromShopBtn.onclick = () => {shopPanel.style.display = "none";mainMenu.style.display = "block";};
+accountSettingsBtn.onclick = () => {mainMenu.style.display = "none";accountSettingsPanel.style.display = "block";};
+backToMenuBtn.onclick = () => {accountSettingsPanel.style.display = "none";mainMenu.style.display = "block";};
+playerNameInput.addEventListener("input", () => {playerName =playerNameInput.value.replace(/[<>]/g, "").trim();localStorage.setItem("playerName",playerName);});
+buyWorldLockBtn.onclick = () => {if(gems < 250){addChatMessage("[SHOP] Not enough gems!");return;}gems -= 250;if(inventory.world_lock === undefined){inventory.world_lock = 0;}inventory.world_lock++;updateGemsUI();updateInventoryUI();updateHotbar();addChatMessage("[SHOP] You bought a World Lock!");};
+publicWorldToggle.onchange = () => {
+    worldPublic = publicWorldToggle.checked;
+};
+worldBackgroundSelect.onchange = () => {
+
+    worldBackground =
+        worldBackgroundSelect.value;
+
+    updateBackground();
+};
+closeWorldLockPanel.onclick = () => {
+    worldLockPanel.style.display = "none";
+    worldLockMenuOpen = false;
+};
+closeWorldLockPanel.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    worldLockPanel.style.display = "none";
+    worldLockMenuOpen = false;
+}, { passive:false });
+    let chatQueue = [];
+let chatVisibleTimeout = null;
+menuButton.addEventListener("click", () => {if(menuPanel.style.display === "none" ||menuPanel.style.display === ""){menuPanel.style.display = "block";inMenu = true;chatPanel.style.display = "none";} else {menuPanel.style.display = "none";inMenu = false;}});
+chatButton.addEventListener("click", () => {if(chatPanel.style.display === "flex"){chatPanel.style.display = "none";} else {chatPanel.style.display = "flex";chatInput.focus();}});
+function sendPlayerChat(){const text = chatInput.value.trim();if(text === "") return;playerChat = text;playerChatTime = Date.now();const displayName =playerName && playerName.trim() !== ""? playerName: "Unnamed";addChatMessage(`<${displayName}> ${text}`);chatInput.value = "";chatPanel.style.display = "none";}
+function addChatMessage(message){const div = document.createElement("div");div.className = "chatMessage";div.innerText = message;chatMessages.appendChild(div);chatQueue.push(div);while(chatQueue.length > 6){const old = chatQueue.shift();old.remove();}chatMessages.style.top = "0px";clearTimeout(chatVisibleTimeout);chatVisibleTimeout = setTimeout(() => {chatMessages.style.top = "-220px";}, 5000);}
+sendChat.addEventListener("click", sendPlayerChat);
+sendChat.addEventListener("touchstart", (e) => {if(inMenu) return;e.preventDefault();sendPlayerChat();}, { passive: false });
+chatInput.addEventListener("keydown", (e) => {if(inMenu) return;if(e.key === "Enter"){sendPlayerChat();}});
 const gemIcon = document.createElement("canvas");
 gemIcon.width = 16;
 gemIcon.height = 16;
 const gctx = gemIcon.getContext("2d");
-function drawGemIcon(){
-    const p = 2;
-    function px(x,y,w,h,color){
-        gctx.fillStyle = color;
-        gctx.fillRect(x*p,y*p,w*p,h*p);
-    }
-    gctx.clearRect(0,0,16,16);
-    px(3,0,2,2,"#d6fbff");
-    px(2,1,4,1,"#8fefff");
-    px(1,2,6,2,"#00c8e6");
-    px(2,4,4,1,"#009bb3");
-    px(3,5,2,1,"#007a8c");
-    px(3,2,1,1,"#ffffff");
-}
+function drawGemIcon(){const p = 2;function px(x,y,w,h,color){gctx.fillStyle = color;gctx.fillRect(x*p,y*p,w*p,h*p);}gctx.clearRect(0,0,16,16);px(3,0,2,2,"#d6fbff");px(2,1,4,1,"#8fefff");px(1,2,6,2,"#00c8e6");px(2,4,4,1,"#009bb3");px(3,5,2,1,"#007a8c");px(3,2,1,1,"#ffffff");}
 drawGemIcon();
 const gemsUI = document.createElement("div");
 gemsUI.style.position = "fixed";
@@ -120,6 +212,11 @@ gemsUI.appendChild(gemIcon);
 gemsUI.appendChild(gemCount);
 document.body.appendChild(gemsUI);
 function updateGemsUI(){gemCount.innerText = gems;}
+function updateBackground(){
+    if(worldBackground === "day"){document.body.style.background ="#6ec6ff";}
+    else if(worldBackground === "night"){document.body.style.background ="#0f172a";}
+    else if(worldBackground === "snowy"){document.body.style.background ="#dfefff";}
+    else if(worldBackground === "rain"){document.body.style.background ="#4b5563";}}
 function generateBlockTexture(type){const c = document.createElement("canvas");c.width = blockSize;c.height = blockSize;const ctx = c.getContext("2d");ctx.clearRect(0, 0, c.width, c.height);const p = blockSize / 8;
     function px(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p, y*p, w*p, h*p);}
 if(type === "soil_base" || type === "soil_grass"){px(0,0,8,8,"#7a4f2b");px(1,1,1,1,"#5c3a1f");px(3,2,1,1,"#5c3a1f");px(6,1,1,1,"#5c3a1f");px(2,5,1,1,"#5c3a1f");px(5,6,1,1,"#5c3a1f");px(4,4,1,1,"#9c6b3a");px(7,3,1,1,"#9c6b3a");
@@ -147,6 +244,7 @@ else if(type === "magic_stuff"){
     px(1,1,1,1,"#ffffff");px(6,2,1,1,"#ffffff");px(3,5,1,1,"#ffffff");}
 else if(type === "metal_plate"){px(0,0,8,8,"#6e737a");px(0,0,8,1,"#8a9098");px(0,7,8,1,"#4f545b");px(0,0,1,8,"#5a5f66");px(7,0,1,8,"#5a5f66");px(2,2,4,4,"#7b818a");px(2,2,4,1,"#9aa1aa");px(2,5,4,1,"#5c6168");px(3,3,2,2,"#b0b6bf");px(0,3,8,1,"#3f444a");px(3,0,1,8,"#3f444a");}
 else if(type === "red_brick"){px(0,0,8,8,"#8c2f2f");px(0,0,4,3,"#a33a3a");px(4,0,4,3,"#7a2727");px(0,3,8,1,"#3b1f1f");px(0,4,3,3,"#7a2727");px(3,4,5,3,"#a33a3a");px(0,2,4,1,"#912f2f");px(4,2,4,1,"#6f2424");px(0,6,3,1,"#6f2424");px(3,6,5,1,"#912f2f");px(4,0,1,3,"#3b1f1f");px(3,4,1,3,"#3b1f1f");}
+else if(type === "world_lock"){px(0,0,8,8,"#f1c40f");px(1,1,6,6,"#d4ac0d");px(2,2,4,4,"#f7dc6f");px(3,3,2,2,"#fff4b3");px(3,1,2,1,"#000");px(2,2,4,1,"#000");px(2,3,1,2,"#000");px(5,3,1,2,"#000");px(3,5,2,1,"#000");}
 else if(type.endsWith("_seed")){const base = type.replace("_seed", "");const p2 = blockSize / 8;
     function spx(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p2, y*p2, w*p2, h*p2);}ctx.clearRect(0,0,blockSize,blockSize);spx(1,1,6,6,"#111");
 if(base === "soil"){spx(3,1,2,1,"#6b4423");spx(2,2,4,3,"#8B5A2B");spx(3,5,2,1,"#3CBA54");}
@@ -175,16 +273,16 @@ const canvas = document.getElementById("game");
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const jump = document.getElementById("jump");
-left.ontouchstart = () => keys.left = true;
-left.ontouchend = () => keys.left = false;
-right.ontouchstart = () => keys.right = true;
-right.ontouchend = () => keys.right = false;
-jump.ontouchstart = () => keys.up = true;
-jump.ontouchend = () => keys.up = false;
+left.ontouchstart = () => {if(inMenu) return;keys.left = true;};
+left.ontouchend = () => {keys.left = false;};
+right.ontouchstart = () => {if(inMenu) return;keys.right = true;};
+right.ontouchend = () => {keys.right = false;};
+jump.ontouchstart = () => {if(inMenu) return;keys.up = true;};
+jump.ontouchend = () => {keys.up = false;};
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
-document.addEventListener("keydown", e => {if(e.key === "a") keys.left = true;if(e.key === "d") keys.right = true;if(e.key === "w") keys.up = true;});
-document.addEventListener("keyup", e => {if(e.key === "a") keys.left = false;if(e.key === "d") keys.right = false;if(e.key === "w") keys.up = false;});
+document.addEventListener("keydown", e => {if(inMenu) return;if(e.key === "a") keys.left = true;if(e.key === "d") keys.right = true;if(e.key === "w") keys.up = true;});
+document.addEventListener("keyup", e => {if(inMenu) return;if(e.key === "a") keys.left = false;if(e.key === "d") keys.right = false;if(e.key === "w") keys.up = false;});
 const ui = document.getElementById("uiContainer");
 const toggleBtn = document.getElementById("toggleHotbar");
 let uiVisible = true;
@@ -192,15 +290,15 @@ toggleBtn.onclick = () => {uiVisible = !uiVisible;currentOffset = uiVisible ? 0 
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-canvas.addEventListener("mousedown", e => {if(hotbar.selected === 0){isBreakingHeld = true;startBreaking(e.clientX, e.clientY, true);} else {placeBlock(e.clientX, e.clientY);}});
-canvas.addEventListener("mouseup", () => {isBreakingHeld = false;});
-canvas.addEventListener("mouseleave", () => {isBreakingHeld = false;});
-canvas.addEventListener("mousemove", e => {lastMouseX = e.clientX;lastMouseY = e.clientY;});
-canvas.addEventListener("touchstart", e => {if(e.target.tagName !== "CANVAS") return;e.preventDefault();const t = e.touches[0];const x = t.clientX;const y = t.clientY;lastMouseX = x;lastMouseY = y;if(hotbar.selected === 0){isBreakingHeld = true;startBreaking(x, y, true);} else {placeBlock(x, y);}}, {passive:false});
-canvas.addEventListener("touchmove", e => {if(!isBreakingHeld) return;e.preventDefault();}, {passive:false});
-canvas.addEventListener("touchend", () => { isBreakingHeld = false; breaking = null;});
-canvas.addEventListener("touchcancel", () => { isBreakingHeld = false; });
-canvas.addEventListener("touchmove", e => {const t = e.touches[0];lastMouseX = t.clientX;lastMouseY = t.clientY;}, {passive:false});
+canvas.addEventListener("mousedown", e => {if(inMenu) return;if(hotbar.selected === 0){isBreakingHeld = true;startBreaking(e.clientX, e.clientY, true);} else {if(hotbar.selected === 2){openWorldLockMenu(e.clientX,e.clientY);}else{placeBlock(e.clientX,e.clientY);}}});
+canvas.addEventListener("mouseup", () => {if(inMenu) return;isBreakingHeld = false;});
+canvas.addEventListener("mouseleave", () => {if(inMenu) return;isBreakingHeld = false;});
+canvas.addEventListener("mousemove", e => {if(inMenu) return;lastMouseX = e.clientX;lastMouseY = e.clientY;});
+canvas.addEventListener("touchstart", e => {if(inMenu) return;if(e.target.tagName !== "CANVAS") return;e.preventDefault();const t = e.touches[0];const x = t.clientX;const y = t.clientY;lastMouseX = x;lastMouseY = y;if(hotbar.selected === 0){isBreakingHeld = true;startBreaking(x, y, true);} else {if(hotbar.selected === 2){openWorldLockMenu(x, y);}else{placeBlock(x, y);}}}, {passive:false});
+canvas.addEventListener("touchmove", e => {if(inMenu) return;if(!isBreakingHeld) return;e.preventDefault();}, {passive:false});
+canvas.addEventListener("touchend", () => {if(inMenu) return; isBreakingHeld = false; breaking = null;});
+canvas.addEventListener("touchcancel", () => {if(inMenu) return; isBreakingHeld = false; });
+canvas.addEventListener("touchmove", e => {if(inMenu) return;const t = e.touches[0];lastMouseX = t.clientX;lastMouseY = t.clientY;}, {passive:false});
 const blockSize = 32;    
 const zoom = 1.70;    
 const worldWidth = 101;    
@@ -224,114 +322,47 @@ for(let i=0;i<5;i++){crackImages.push(generateCrack(i));}
 let camera = { x:0, y:0 };
 let world=[];    
 let background = [];
-const BLOCK_IDS = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19};
-const BLOCKS = {0: { name: "air", hits: 0, solid: false },1: { name: "soil", hits: 2, solid: true },2: { name: "granite", hits: 4, solid: true },3: { name: "cave_bg", hits: 2, solid: false },4: { name: "grass", hits: 2, solid: false },5: { name: "lava", hits: 2, solid: false, touchDamage: 1, bounce: 3, texture: "#ff4500" },6: { name: "wood", hits: 3, solid: true },7: { name: "obsidian", hits: 6, solid: true },8: { name: "bedrock", hits: Infinity, solid: true },9: { name: "marble", hits: 4, solid: true },10: {name: "sand", hits: 2, solid: true},11: {name: "sandstone", hits: 4, solid: true},12: {name: "water", hits: 3, solid: false},13: { name: "gem_soil", hits: 3, solid: true },14: { name: "black_brick", hits: 5, solid: true },15: { name: "concrete_block_1x1", hits: 5, solid: true },16: { name: "glass", hits: 3, solid: true },17: { name: "magic_stuff", hits: 5, solid: true },18: { name: "metal_plate", hits: 6, solid: true },19: { name: "red_brick", hits: 4, solid: true },};
+const BLOCK_IDS = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19,world_lock: 20};
+const BLOCKS = {0: { name: "air", hits: 0, solid: false },1: { name: "soil", hits: 2, solid: true },2: { name: "granite", hits: 4, solid: true },3: { name: "cave_bg", hits: 2, solid: false },4: { name: "grass", hits: 2, solid: false },5: { name: "lava", hits: 2, solid: false, touchDamage: 1, bounce: 3, texture: "#ff4500" },6: { name: "wood", hits: 3, solid: true },7: { name: "obsidian", hits: 6, solid: true },8: { name: "bedrock", hits: Infinity, solid: true },9: { name: "marble", hits: 4, solid: true },10: {name: "sand", hits: 2, solid: true},11: {name: "sandstone", hits: 4, solid: true},12: {name: "water", hits: 3, solid: false},13: { name: "gem_soil", hits: 3, solid: true },14: { name: "black_brick", hits: 5, solid: true },15: { name: "concrete_block_1x1", hits: 5, solid: true },16: { name: "glass", hits: 3, solid: true },17: { name: "magic_stuff", hits: 5, solid: true },18: { name: "metal_plate", hits: 6, solid: true },19: { name: "red_brick", hits: 4, solid: true },20: {name: "world_lock",hits: 10,solid: true},};
 function forceBedrock(x) {world[worldHeight - 1][x] = 8;world[worldHeight - 2][x] = 8;}
-function generateTerrain() {
-    for (let y = 0; y < worldHeight; y++) {world[y] = [];background[y] = [];
-        for (let x = 0; x < worldWidth; x++) {world[y][x] = 0;background[y][x] = 0;}}
-    let height = centerY;
-    for (let x = 0; x < worldWidth; x++) {
-        height += Math.floor((Math.random() - 0.5) * 3);
-        height = Math.max(45, Math.min(60, height));
-        for (let y = height; y < worldHeight; y++) {
-            const depth = y / worldHeight;
-            const r = Math.random();
-            if (depth > 0.75) {
-    if (r < 0.03) world[y][x] = 5;
-    else if (r < 0.07) world[y][x] = 2;
-    else if (r < 0.10) world[y][x] = 7;
-    else if (r < 0.15) world[y][x] = 9;
-    else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
+function generateTerrain(){
+world=[];background=[];
+for(let y=0;y<worldHeight;y++){world[y]=[];background[y]=[];for(let x=0;x<worldWidth;x++)world[y][x]=background[y][x]=0;}
+let terrainHeight=centerY;
+for(let x=0;x<worldWidth;x++){
+terrainHeight=Math.max(45,Math.min(60,terrainHeight+Math.floor((Math.random()-.5)*3)));
+for(let y=terrainHeight;y<worldHeight;y++){
+const d=y/worldHeight,r=Math.random();
+world[y][x]=d>.75?r<.03?5:r<.07?2:r<.10?7:r<.15?9:Math.random()<1/25?13:1:d>.55?r<.04?9:r<.08?2:Math.random()<1/25?13:1:d>.4?r<.05?2:Math.random()<1/25?13:1:r<.03?2:Math.random()<1/25?13:1;
 }
-else if (depth > 0.55) {
-    if (r < 0.04) world[y][x] = 9;
-    else if (r < 0.08) world[y][x] = 2;
-    else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
-} else if (depth > 0.4) {
-                if (r < 0.05) world[y][x] = 2;
-                else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
-            } else {
-                if (r < 0.03) world[y][x] = 2;
-                else world[y][x] = (Math.random() < 1/25) ? 13 : 1;
-            }
-            background[y][x] = 3;
-        }
-        if (x !== centerX && Math.random() < 0.25) {
-            const gy = height - 1;
-            if (gy >= 0 && world[gy][x] === 0) {
-                world[gy][x] = 4;
-            }
-        }
-    }
-    for (let x = 0; x < worldWidth; x++) {
-        world[worldHeight - 1][x] = 8;
-        world[worldHeight - 2][x] = 8;
-    }
-    for (let y = 0; y < worldHeight; y++) {
-        if (world[y][centerX] !== 0 && BLOCKS[world[y][centerX]]?.solid) {
-            spawnY = (y - 1) * blockSize;
-            break;
-        }
-    }
-    if (spawnY === 0) spawnY = centerY * blockSize;
-    window.spawnY = spawnY;
-}
+if(x!==centerX&&Math.random()<.25){
+const gy=terrainHeight-1;
+if(gy>=0&&world[gy][x]===0)world[gy][x]=4;
+}}
+for(let x=0;x<worldWidth;x++)world[worldHeight-1][x]=world[worldHeight-2][x]=8;
+for(let y=0;y<worldHeight;y++)for(let x=0;x<worldWidth;x++){const b=world[y][x];if(b&&b!==4&&b!==12&&b!==5&&b!==8)background[y][x]=3;}
+spawnY=centerY*blockSize;
+for(let y=0;y<worldHeight;y++){const id=world[y][centerX];if(BLOCKS[id]?.solid&&id!==8){spawnY=(y-1)*blockSize;break;}}
+window.spawnY=spawnY;
 updateHotbar();
-function generateWaterLayer() {
-    const startY = Math.floor(spawnY / blockSize) + 3;
-    for (let y = startY; y < worldHeight; y++) {
-        for (let x = 0; x < worldWidth; x++) {
-            if (world[y][x] === 0) {
-                world[y][x] = 12;
-            }
-        }
-    }
-    const temp = JSON.parse(JSON.stringify(world));
-    for (let y = startY; y < worldHeight; y++) {
-        for (let x = 0; x < worldWidth; x++) {
-            if (temp[y][x] === 12) {
-                const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
-                for (const [dx, dy] of dirs) {
-                    const nx = x + dx;
-                    const ny = y + dy;
-                    if (
-    world[ny]?.[nx] !== undefined &&
-    world[ny][nx] !== 12 &&
-    world[ny][nx] !== 0 &&
-    world[ny][nx] !== 8 &&
-    !(dy === -1)
-) {
-    world[ny][nx] = 11;
+updateBackground();
 }
-                }
-            }
-        }
-    }
-    const temp2 = JSON.parse(JSON.stringify(world));
-    for (let y = startY; y < worldHeight; y++) {
-        for (let x = 0; x < worldWidth; x++) {
-            if (temp2[y][x] === 11) {
-                const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
-                for (const [dx, dy] of dirs) {
-                    const nx = x + dx;
-                    const ny = y + dy;
-                    if (
-    world[ny]?.[nx] !== undefined &&
-    world[ny][nx] !== 12 &&
-    world[ny][nx] !== 0 &&
-    world[ny][nx] !== 8 &&
-    !(dy === -1)
-) {
-    world[ny][nx] = 10;
+function generateWaterLayer(){
+const startY=Math.floor(spawnY/blockSize)+3,dirs=[[0,1],[0,-1],[1,0],[-1,0]];
+for(let y=startY;y<worldHeight;y++)for(let x=0;x<worldWidth;x++)if(world[y][x]===0){world[y][x]=12;background[y][x]=3;}
+const spread=type=>{
+const temp=JSON.parse(JSON.stringify(world));
+for(let y=startY;y<worldHeight;y++)for(let x=0;x<worldWidth;x++)if(temp[y][x]===type)for(const[dx,dy]of dirs){
+const nx=x+dx,ny=y+dy;
+if(world[ny]?.[nx]!==undefined&&world[ny][nx]!==12&&world[ny][nx]!==0&&world[ny][nx]!==8&&dy!==-1){
+world[ny][nx]=type===12?11:10;
+background[ny][nx]=3;
+}}
+};
+spread(12);
+spread(11);
 }
-                }
-            }
-        }
-    }
-}
-function getSeedResult(a, b){
-    const combo = new Set([a, b]);
+function getSeedResult(a, b){const combo = new Set([a, b]);
     if(combo.has("soil_seed") && combo.has("obsidian_seed"))return "black_brick_seed";
     if(combo.has("soil_seed") && combo.has("lava_seed"))return "wood_seed";
     if(combo.has("soil_seed") && combo.has("cave_bg_seed"))return "grass_seed";
@@ -340,10 +371,8 @@ function getSeedResult(a, b){
     if(combo.has("marble_seed") && combo.has("obsidian_seed"))return "magic_stuff_seed";
     if(combo.has("obsidian_seed") && combo.has("lava_seed"))return "metal_plate_seed"
     if(combo.has("soil_seed") && combo.has("granite_seed"))return "red_brick_seed"
-    return null;
-}
-function hasSolidNeighbor(x, y){
-    const neighbors = [world[y+1]?.[x],world[y-1]?.[x],world[y]?.[x+1],world[y]?.[x-1]];return neighbors.some(n => BLOCKS[n]?.solid);}
+    return null;}
+function hasSolidNeighbor(x, y){const neighbors = [world[y+1]?.[x],world[y-1]?.[x],world[y]?.[x+1],world[y]?.[x-1]];return neighbors.some(n => BLOCKS[n]?.solid);}
 let jumpLock = false;
 function respawnPlayer() {player.x = spawnX;player.y = spawnY - blockSize * 0.9;player.velX = 0;player.velY = 0;playerHealth = 6; }
 generateTerrain();
@@ -359,7 +388,7 @@ for (let y = 0; y < worldHeight; y++) {
 let player = {x: spawnX,y: spawnY - blockSize * 0.9,width: blockSize * 0.6,height: blockSize * 0.9,velX: 0,velY: 0,onGround: true,};
 let playerHealth = 6;
 let keys={left:false,right:false,up:false};    
-document.body.addEventListener("touchstart",(e)=>{if(e.target.tagName==="BUTTON"){    e.preventDefault();    }    },{passive:false});    
+document.body.addEventListener("touchstart",(e) => {if(e.target.tagName === "BUTTON" &&!e.target.closest("#menuPanel") &&!e.target.closest("#chatPanel")){e.preventDefault();}},{ passive:false });
 function isSolid(x, y){if(x < 0 || y < 0 || x >= worldWidth || y >= worldHeight) return false;const id = world[y][x];return BLOCKS[id]?.solid || false;}
 function collide(deltaTime) {
 player.onGround = false;
@@ -478,215 +507,222 @@ if (keys.right) player.velX += accel * deltaTime;
     if (player.velY > 12) player.velY = 12;
     collide(deltaTime);
 }
-function updateCamera(){    
-    camera.x=Math.max(0,Math.min(    
-        player.x-canvas.width/(2*zoom),    
-        worldPixelWidth-canvas.width/zoom    
-    ));    
-    
-    camera.y=Math.max(0,Math.min(    
-        player.y-canvas.height/(2*zoom),    
-        worldPixelHeight-canvas.height/zoom    
-    ));    
+function updateCamera(){
+camera.x=Math.max(0,Math.min(player.x-canvas.width/(2*zoom),worldPixelWidth-canvas.width/zoom));
+camera.y=Math.max(0,Math.min(player.y-canvas.height/(2*zoom),worldPixelHeight-canvas.height/zoom));
 }
-function resizeCanvas() {
-    setTimeout(() => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }, 100);
+function resizeCanvas(){
+setTimeout(()=>{
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+},100);
 }
-let uiStartY = 0;
-let breaking = null;
-let breakingCooldown = 10000;
-let lastBreakTime = 0;
-let lastMouseX = null;
-let lastMouseY = null;
-function drawBlock(x, y){
-    let block = world[y][x];
-    let textureKey =
-block === 1 ? "soil" :
-block === 2 ? "granite" :
-block === 3 ? "cave_bg" :
-block === 4 ? "grass" :
-block === 5 ? "lava" :
-block === 6 ? "wood" :
-block === 7 ? "obsidian" :
-block === 8 ? "bedrock" :
-block === 9 ? "marble" :
-block === 10 ? "sand" :
-block === 11 ? "sandstone" :
-block === 12 ? "water" :
-block === 13 ? "gem_soil" :
-block === 14 ? "black_brick" :
-block === 15 ? "concrete_block_1x1" :
-block === 16 ? "glass" :
-block === 17 ? "magic_stuff" :
-block === 18 ? "metal_plate" :
-block === 19 ? "red_brick" :
-null;
-    if(block === 1){
-        const above = world[y-1]?.[x];
-        const hasGrass = (above === 0 || above === 3 || above === 4);
-        textureKey = hasGrass ? "soil_grass" : "soil_base";
-    }
-    const drawX = (x * blockSize - camera.x) * zoom;
-    const drawY = (y * blockSize - camera.y) * zoom;
-    drawTexture(
-    ctx,
-    textureKey,
-    drawX,
-    drawY,
-    blockSize * zoom
+let uiStartY=0,breaking=null,breakingCooldown=1e4,lastBreakTime=0,lastMouseX=null,lastMouseY=null;
+function drawBlock(x,y){
+const b=world[y][x],drawX=(x*blockSize-camera.x)*zoom,drawY=(y*blockSize-camera.y)*zoom;
+let key={
+1:"soil",2:"granite",3:"cave_bg",4:"grass",5:"lava",6:"wood",7:"obsidian",
+8:"bedrock",9:"marble",10:"sand",11:"sandstone",12:"water",13:"gem_soil",
+14:"black_brick",15:"concrete_block_1x1",16:"glass",17:"magic_stuff",
+18:"metal_plate",19:"red_brick",20:"world_lock"
+}[b];
+if(b===1){
+const above=world[y-1]?.[x];
+key=[0,3,4].includes(above)?"soil_grass":"soil_base";
+}
+drawTexture(ctx,key,drawX,drawY,blockSize*zoom);
+if(b===5)for(let i=0;i<2;i++){
+ctx.fillStyle="rgba(255,200,0,0.4)";
+ctx.beginPath();
+ctx.arc(
+drawX+(Math.sin(x+y+i+Date.now()/300)*10+16)*zoom,
+drawY+(Math.cos(x*y+i+Date.now()/400)*10+16)*zoom,
+2*zoom,0,Math.PI*2
 );
-    if(block === 5){
-        for(let i=0;i<2;i++){
-            ctx.fillStyle = "rgba(255,200,0,0.4)";
-            ctx.beginPath();
-            ctx.arc(
-                drawX + (Math.sin((x+y+i+Date.now()/300)) * 10 + 16) * zoom,
-                drawY + (Math.cos((x*y+i+Date.now()/400)) * 10 + 16) * zoom,
-                2 * zoom,
-                0,
-                Math.PI*2
-            );
-            ctx.fill();
-        }
-    }
+ctx.fill();
+}}
+function drawBackground(x,y){
+if(background[y]?.[x]!==3)return;
+const drawX=(x*blockSize-camera.x)*zoom,drawY=(y*blockSize-camera.y)*zoom,key="cave_bg_dark";
+if(!blockTextures[key]){
+const c=document.createElement("canvas"),ctx2=c.getContext("2d"),p=blockSize/8;
+c.width=c.height=blockSize;
+const px=(x,y,w,h,color)=>{
+ctx2.fillStyle=color;
+ctx2.fillRect(x*p,y*p,w*p,h*p);
+};
+px(0,0,8,8,"#24180f");
+px(1,1,1,1,"#1a120b");
+px(3,2,1,1,"#1a120b");
+px(6,3,1,1,"#1a120b");
+px(2,5,1,1,"#3a2618");
+px(5,6,1,1,"#3a2618");
+blockTextures[key]=c;
 }
-function drawBackground(x, y) {
-    if (!background[y] || background[y][x] !== 3) return;
-    const drawX = (x * blockSize - camera.x) * zoom;
-    const drawY = (y * blockSize - camera.y) * zoom;
-    const key = "cave_bg";
-    if (!blockTextures[key]) {
-        const c = document.createElement("canvas");
-        c.width = blockSize;
-        c.height = blockSize;
-        const ctx2 = c.getContext("2d");
-        const p = blockSize / 8;
-        function px(x,y,w,h,color){
-            ctx2.fillStyle = color;
-            ctx2.fillRect(x*p, y*p, w*p, h*p);
-        }
-        px(0,0,8,8,"#3b2a1a");
-        px(1,1,1,1,"#2a1d12");
-        px(3,2,1,1,"#2a1d12");
-        px(6,3,1,1,"#2a1d12");
-        px(2,5,1,1,"#4a3320");
-        px(5,6,1,1,"#4a3320");
-        blockTextures[key] = c;
-    }
-    ctx.drawImage(
-        blockTextures[key],
-        drawX,
-        drawY,
-        blockSize * zoom,
-        blockSize * zoom
-    );
+ctx.drawImage(blockTextures[key],drawX,drawY,blockSize*zoom,blockSize*zoom);
 }
-function drawPlayer(){  
-    let px=(player.x-camera.x)*zoom;  
-    let py=(player.y-camera.y)*zoom;  
-    ctx.fillStyle="red";  
-    ctx.fillRect(px,py,player.width*zoom,player.height*zoom);  
-}  
-function drawGhostBlock() {
-    if (!hotbar.block || hotbar.selected !== 1) return;
-    const px = Math.floor(player.x / blockSize);
-    const py = Math.floor(player.y / blockSize);
-    const range = 3;
-    const item = hotbar.block;
-    const isSeed = item.includes("_seed");
-    const isBg = item === "cave_bg";
-    for (let y = py - range; y <= py + range; y++) {
-        for (let x = px - range; x <= px + range; x++) {
-            if (x < 0 || y < 0 || x >= worldWidth || y >= worldHeight) continue;
-            const dist = Math.hypot(x - px, y - py);
-            if (dist > range) continue;
-            const worldCell = world[y]?.[x] ?? 0;
-            const bgCell = background[y]?.[x] ?? 0;
-            const existingTree = trees.find(t => t.x === x && t.y === y);
-            let canPlace = false;
-            if (isSeed) {
-                if (existingTree) {
-                    const result = getSeedResult(existingTree.type, item);
-                    if (result) canPlace = true;
-                }
-                else {
-                    const below = world[y + 1]?.[x];
-                    if (
-                        worldCell === 0 &&
-                        below &&
-                        BLOCKS[below]?.solid
-                    ){
-                        canPlace = true;
-                    }
-                }
-            }
-            else if (isBg) {
-                if (bgCell === 0) {
-                    canPlace = true;
-                }
-            }
-            else {
-                if (existingTree) continue;
-                if (worldCell !== 0) continue;
-                const blockLeft = x * blockSize;
-                const blockRight = blockLeft + blockSize;
-                const blockTop = y * blockSize;
-                const blockBottom = blockTop + blockSize;
-                const playerLeft = player.x;
-                const playerRight = player.x + player.width;
-                const playerTop = player.y;
-                const playerBottom = player.y + player.height;
-                const overlap =
-                    playerRight > blockLeft &&
-                    playerLeft < blockRight &&
-                    playerBottom > blockTop &&
-                    playerTop < blockBottom;
-                if (overlap) continue;
-                canPlace = true;
-            }
-            if (!canPlace) continue;
-            const drawX = (x * blockSize - camera.x) * zoom;
-            const drawY = (y * blockSize - camera.y) * zoom;
-            const size = blockSize * zoom;
-            ctx.fillStyle = "rgba(255,255,255,0.08)";
-            ctx.fillRect(drawX, drawY, size, size);
-            ctx.strokeStyle = isSeed ? "#00ff88" : "white";
-ctx.lineWidth = 2;
-ctx.setLineDash([6, 4]);
-ctx.strokeRect(drawX, drawY, size, size);
+function drawPlayer(){
+const px=(player.x-camera.x)*zoom,py=(player.y-camera.y)*zoom,bw=player.width*zoom,bh=player.height*zoom;
+if(player.velX>.1)player.faceDir=1;
+else if(player.velX<-.1)player.faceDir=-1;
+if(player.faceDir===undefined)player.faceDir=1;
+const ex=player.faceDir*2*zoom,ey=player.velY<-1?-2*zoom:player.velY>1?2*zoom:0,eye=4*zoom;
+ctx.fillStyle="red";
+ctx.fillRect(px,py,bw,bh);
+ctx.fillStyle="#5a0000";
+ctx.fillRect(px+bw*.28+ex,py+bh*.28+ey,eye,eye);
+ctx.fillRect(px+bw*.62+ex,py+bh*.28+ey,eye,eye);
+const name=playerName?.trim()||"Unnamed";
+ctx.save();
+ctx.fillStyle="white";
+ctx.font=`${10*zoom}px Arial`;
+ctx.textAlign="center";
+ctx.textBaseline="bottom";
+ctx.strokeStyle="black";
+ctx.lineWidth=4;
+ctx.strokeText(name,px+bw/2,py-8);
+ctx.fillText(name,px+bw/2,py-8);
+ctx.restore();
+if(!playerChat)return;
+const age=Date.now()-playerChatTime;
+if(age>=1e4){playerChat="";return;}
+ctx.save();
+ctx.globalAlpha=1-age/1e4;
+ctx.font=`${18*zoom}px Arial`;
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+const bx=px+bw/2,by=py-34,maxW=Math.min(canvas.width*.7,260),words=playerChat.split(" "),lines=[];
+let line="";
+for(const w of words){
+const t=line?line+" "+w:w;
+if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w;}
+else line=t;
+}
+if(line)lines.push(line);
+const lh=22*zoom,pad=10,longest=Math.max(...lines.map(l=>ctx.measureText(l).width)),bw2=longest+pad*2,bh2=lines.length*lh+pad*2;
+let left=bx-bw2/2;
+if(left<5)left=5;
+if(left+bw2>canvas.width-5)left=canvas.width-bw2-5;
+ctx.fillStyle="rgba(0,0,0,.7)";
+ctx.fillRect(left,by-bh2,bw2,bh2);
+ctx.fillStyle="white";
+lines.forEach((l,i)=>ctx.fillText(l,left+bw2/2,by-bh2+pad+lh*(i+.7)));
+ctx.restore();
+}
+function drawGhostBlock(){
+if(!hotbar.block||hotbar.selected!==1)return;
+const px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize),range=3,item=hotbar.block,isSeed=item.includes("_seed"),isBg=item==="cave_bg";
+for(let y=py-range;y<=py+range;y++)for(let x=px-range;x<=px+range;x++){
+if(x<0||y<0||x>=worldWidth||y>=worldHeight||Math.hypot(x-px,y-py)>range)continue;
+const w=world[y]?.[x]??0,b=background[y]?.[x]??0,tree=trees.find(t=>t.x===x&&t.y===y);
+let can=false;
+if(isSeed){
+if(tree){if(getSeedResult(tree.type,item))can=true;}
+else{
+const below=world[y+1]?.[x];
+if(!w&&below&&BLOCKS[below]?.solid)can=true;
+}}
+else if(isBg){
+if(!b)can=true;
+}
+else{
+if(tree||w)continue;
+const l=x*blockSize,r=l+blockSize,t=y*blockSize,bm=t+blockSize,pl=player.x,pr=player.x+player.width,pt=player.y,pb=player.y+player.height;
+if(pr>l&&pl<r&&pb>t&&pt<bm)continue;
+can=true;
+}
+if(!can)continue;
+const dx=(x*blockSize-camera.x)*zoom,dy=(y*blockSize-camera.y)*zoom,size=blockSize*zoom;
+ctx.fillStyle="rgba(255,255,255,.08)";
+ctx.fillRect(dx,dy,size,size);
+ctx.strokeStyle=isSeed?"#00ff88":"white";
+ctx.lineWidth=2;
+ctx.setLineDash([6,4]);
+ctx.strokeRect(dx,dy,size,size);
 ctx.setLineDash([]);
-        }
-    }
+}}
+function drawWorldLockWrench(){
+if(hotbar.selected!==2)return;
+for(let y=0;y<worldHeight;y++)for(let x=0;x<worldWidth;x++)if(world[y][x]===20){
+const dx=(x*blockSize-camera.x)*zoom,dy=(y*blockSize-camera.y)*zoom;
+ctx.save();
+ctx.font=`${22*zoom}px Arial`;
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+ctx.strokeStyle="black";
+ctx.lineWidth=5;
+const px=dx+blockSize*zoom/2,py=dy-10;
+ctx.strokeText("🔧",px,py);
+ctx.fillText("🔧",px,py);
+ctx.restore();
+}
+}
+function drawWeatherEffects(){
+if(!["snowy","rain"].includes(worldBackground))return;
+const t=Date.now();
+for(let i=0;i<80;i++){
+const x=(i*97+t*.1)%canvas.width,y=(i*53+t*.25)%canvas.height;
+if(worldBackground==="snowy"){
+ctx.fillStyle="rgba(255,255,255,.8)";
+ctx.beginPath();
+ctx.arc(x,y,2,0,Math.PI*2);
+ctx.fill();
+}else{
+ctx.strokeStyle="rgba(180,220,255,.7)";
+ctx.lineWidth=2;
+ctx.beginPath();
+ctx.moveTo(x,y);
+ctx.lineTo(x-4,y+12);
+ctx.stroke();
+}}
 }
 function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(worldBackground === "day"){ctx.fillStyle = "#87CEEB";}
+else if(worldBackground === "night"){ctx.fillStyle = "#0f172a";}
+else if(worldBackground === "snowy"){ctx.fillStyle = "#dfefff";}
+else if(worldBackground === "rain"){ctx.fillStyle = "#5c6b73";}
+ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const startX = Math.floor(camera.x / blockSize) - 1;
     const startY = Math.floor(camera.y / blockSize) - 1;
     const endX = Math.ceil((camera.x + canvas.width / zoom) / blockSize) + 1;
     const endY = Math.ceil((camera.y + canvas.height / zoom) / blockSize) + 1;
     for (let y = startY; y < endY; y++) {
         for (let x = startX; x < endX; x++) {
-            if (x >= 0 && y >= 0 && x < worldWidth && y < worldHeight) {
+            if (
+                x >= 0 &&
+                y >= 0 &&
+                x < worldWidth &&
+                y < worldHeight
+            ) {
                 drawBackground(x, y);
-                if (world[y][x] !== 0) drawBlock(x, y);
+                if (world[y][x] !== 0) {
+                    drawBlock(x, y);
+                }
             }
         }
     }
     trees.forEach(tree => {
-            const time = Date.now() - tree.plantedAt;
-            const progress = time / tree.growTime;
-            if(progress >= 1) tree.stage = 2;
-            else if(progress >= 0.5) tree.stage = 1;
-            else tree.stage = 0;
-            drawTree(ctx, tree.x, tree.y, blockSize, tree.stage, tree.type);
+        const time = Date.now() - tree.plantedAt;
+        const progress = time / tree.growTime;
+        if(progress >= 1) tree.stage = 2;
+        else if(progress >= 0.5) tree.stage = 1;
+        else tree.stage = 0;
+        drawTree(
+            ctx,
+            tree.x,
+            tree.y,
+            blockSize,
+            tree.stage,
+            tree.type
+        );
     });
     drawBreaking();
     drawDrops();
     drawSeedCombineHint();
     drawGhostBlock();
+    drawWorldLockWrench();
+    drawWeatherEffects();
     drawPlayer();
     drawUIOverlay();
 }
@@ -709,6 +745,27 @@ function drawUIOverlay(){
         );
         ctx.restore();
     }
+    if(worldOwner){
+    ctx.save();
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 22px Arial";
+    ctx.textAlign = "center";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 5;
+    const text =
+        `🔒 World Owner: ${worldOwner}`;
+    ctx.strokeText(
+        text,
+        canvas.width / 2,
+        40
+    );
+    ctx.fillText(
+        text,
+        canvas.width / 2,
+        40
+    );
+    ctx.restore();
+}
 }
 function drawTree(ctx, x, y, size, stage, type) {
     ctx.save();
@@ -719,138 +776,38 @@ function drawTree(ctx, x, y, size, stage, type) {
         ctx.fillStyle = color;
         ctx.fillRect(drawX + xp*p, drawY + yp*p, w*p, h*p);
     }
-    if(stage === 0){
-        px(3,6,1,1,"#2ecc71");
-        px(3,7,1,1,"#145a32");
-    }
-    else if(stage === 1){
-        px(2,3,4,2,"#2ecc71");
-        px(1,4,6,1,"#27ae60");
-        px(3,5,2,2,"#8B5A2B");
-        px(3,6,1,1,"#6e3f1a");
-    }
-    else if(stage === 2){
-        px(2,0,4,1,"#2ecc71");
-        px(1,1,6,1,"#27ae60");
-        px(0,2,8,2,"#2ecc71");
-        px(1,4,6,1,"#27ae60");
-        px(2,5,4,1,"#3CBA54");
-        px(1,1,1,1,"#6CFF3C");
-        px(2,0,1,1,"#6CFF3C");
-        px(6,3,1,1,"#145a32");
-        px(5,4,1,1,"#145a32");
-        px(4,5,1,1,"#145a32");
-        px(3,5,2,3,"#8B5A2B");
-        px(3,6,1,2,"#6e3f1a");
+    if(stage === 0){px(3,6,1,1,"#2ecc71");px(3,7,1,1,"#145a32");}
+    else if(stage === 1){px(2,3,4,2,"#2ecc71");px(1,4,6,1,"#27ae60");px(3,5,2,2,"#8B5A2B");px(3,6,1,1,"#6e3f1a");}
+    else if(stage === 2){px(2,0,4,1,"#2ecc71");px(1,1,6,1,"#27ae60");px(0,2,8,2,"#2ecc71");px(1,4,6,1,"#27ae60");px(2,5,4,1,"#3CBA54");px(1,1,1,1,"#6CFF3C");px(2,0,1,1,"#6CFF3C");px(6,3,1,1,"#145a32");px(5,4,1,1,"#145a32");px(4,5,1,1,"#145a32");px(3,5,2,3,"#8B5A2B");px(3,6,1,2,"#6e3f1a");
         const iconSize = p * 4;
         const iconX = drawX + 2*p;
         const iconY = drawY + 2*p;
-        drawTreeTypeIcon(ctx, iconX, iconY, iconSize, type);
-    }
-    ctx.restore();
-}
+        drawTreeTypeIcon(ctx, iconX, iconY, iconSize, type);}
+    ctx.restore();}
 function drawTreeTypeIcon(ctx, x, y, size, type){
     ctx.save();
     const p = size / 8;
-    function px(xp, yp, w, h, color){
-        ctx.fillStyle = color;
-        ctx.fillRect(x + xp*p, y + yp*p, w*p, h*p);
-    }
-    function border(){
-        px(0,0,8,1,"#FFD700");
-        px(0,7,8,1,"#FFD700");
-        px(0,0,1,8,"#FFD700");
-        px(7,0,1,8,"#FFD700");
-    }
-    px(1,1,6,6,"rgba(0,0,0,0.25)");
-    if(type === "soil_seed"){
-        px(1,3,6,4,"#7a4f2b");
-        px(1,1,6,2,"#3CBA54");
-    }
-    else if(type === "granite_seed"){
-        px(1,1,6,6,"#888");
-        px(3,3,1,1,"#666");
-    }
-    else if(type === "cave_bg_seed"){
-        px(1,1,6,6,"#3b2a1a");
-        px(3,3,1,1,"#2a1d12");
-    }
-    else if(type === "grass_seed"){
-        px(3,2,2,4,"#2ecc71");
-        px(2,4,1,2,"#3CBA54");
-        px(5,4,1,2,"#3CBA54");
-        px(3,1,1,1,"#6CFF3C");
-    }
-    else if(type === "lava_seed"){
-        px(1,1,6,6,"#ff4500");
-        px(2,2,2,2,"#ff7a00");
-        px(3,3,1,1,"#ffff66");
-    }
-    else if(type === "wood_seed"){
-    px(1,1,6,6,"#8B5A2B");
-    px(2,2,4,2,"#A9743A");
-}
-else if(type === "obsidian_seed"){
-    px(1,1,6,6,"#1b1024");
-    px(2,2,4,4,"#2e1a4d");
-    px(3,3,1,1,"#9b5cff");
-}
-else if(type === "marble_seed"){
-    px(1,1,6,6,"#f2f2f2");
-    px(2,2,4,4,"#e6e6e6");
-    px(3,3,2,2,"#ffffff");
-}
-else if(type === "water_seed"){
-    px(1,1,6,6,"#3498db");
-    px(3,3,2,2,"#85c1e9");
-}
-else if(type === "sand_seed"){
-    px(1,1,6,6,"#f7e7b4");
-    px(3,3,2,2,"#fff2cc");
-}
-else if(type === "sandstone_seed"){
-    px(1,1,6,6,"#d2b48c");
-    px(3,3,2,2,"#e0c9a6");
-}
-else if(type === "gem_soil_seed"){
-    px(1,1,6,6,"#7a4f2b");
-    px(3,3,2,2,"#00aaff");
-}
-else if(type === "black_brick_seed"){
-    px(1,1,6,6,"#1a1a1a");
-    px(3,3,2,2,"#444");
-}
-else if(type === "concrete_block_1x1_seed"){
-    px(1,1,6,6,"#bfbfbf");
-    px(3,3,2,2,"#e0e0e0");
-    px(2,4,1,1,"#8c8c8c");
-}
-else if(type === "glass_seed"){
-    px(1,1,6,6,"#aeefff");
-    px(2,2,4,4,"#dff9ff");
-    px(3,3,2,2,"#ffffff");
-}
-else if(type === "magic_stuff_seed"){
-    const colors = ["#ff0000","#ff7f00","#ffff00","#00ff00","#0000ff","#8f00ff"];
-    px(1,1,6,6,"#111");
-    for(let i = 0; i < 6; i++){
-        px(2, i+1, 4, 1, colors[i]);
-    }
-    px(3,3,1,1,"#ffffff");
-    px(4,4,1,1,"#ffffff");
-}
-else if(type === "metal_plate_seed"){
-    px(1,1,6,6,"#5f646b");
-    px(2,2,4,4,"#7a8088");
-    px(3,3,2,2,"#c0c6cf");
-}
-else if(type === "red_brick_seed"){
-    px(1,1,6,6,"#8c2f2f");
-    px(3,3,2,2,"#d65a5a");
-}
-    border();
-    ctx.restore();
-}
+    function px(xp, yp, w, h, color){ctx.fillStyle = color;ctx.fillRect(x + xp*p, y + yp*p, w*p, h*p);}
+    function border(){px(0,0,8,1,"#FFD700");px(0,7,8,1,"#FFD700");px(0,0,1,8,"#FFD700");px(7,0,1,8,"#FFD700");}px(1,1,6,6,"rgba(0,0,0,0.25)");
+if(type === "soil_seed"){px(1,3,6,4,"#7a4f2b");px(1,1,6,2,"#3CBA54");}
+else if(type === "granite_seed"){px(1,1,6,6,"#888");px(3,3,1,1,"#666");}
+else if(type === "cave_bg_seed"){px(1,1,6,6,"#3b2a1a");px(3,3,1,1,"#2a1d12");}
+else if(type === "grass_seed"){px(3,2,2,4,"#2ecc71");px(2,4,1,2,"#3CBA54");px(5,4,1,2,"#3CBA54");px(3,1,1,1,"#6CFF3C");}
+else if(type === "lava_seed"){px(1,1,6,6,"#ff4500");px(2,2,2,2,"#ff7a00");px(3,3,1,1,"#ffff66");}
+else if(type === "wood_seed"){px(1,1,6,6,"#8B5A2B");px(2,2,4,2,"#A9743A");}
+else if(type === "obsidian_seed"){px(1,1,6,6,"#1b1024");px(2,2,4,4,"#2e1a4d");px(3,3,1,1,"#9b5cff");}
+else if(type === "marble_seed"){px(1,1,6,6,"#f2f2f2");px(2,2,4,4,"#e6e6e6");px(3,3,2,2,"#ffffff");}
+else if(type === "water_seed"){px(1,1,6,6,"#3498db");px(3,3,2,2,"#85c1e9");}
+else if(type === "sand_seed"){px(1,1,6,6,"#f7e7b4");px(3,3,2,2,"#fff2cc");}
+else if(type === "sandstone_seed"){px(1,1,6,6,"#d2b48c");px(3,3,2,2,"#e0c9a6");}
+else if(type === "gem_soil_seed"){px(1,1,6,6,"#7a4f2b");px(3,3,2,2,"#00aaff");}
+else if(type === "black_brick_seed"){px(1,1,6,6,"#1a1a1a");px(3,3,2,2,"#444");}
+else if(type === "concrete_block_1x1_seed"){px(1,1,6,6,"#bfbfbf");px(3,3,2,2,"#e0e0e0");px(2,4,1,1,"#8c8c8c");}
+else if(type === "glass_seed"){px(1,1,6,6,"#aeefff");px(2,2,4,4,"#dff9ff");px(3,3,2,2,"#ffffff");}
+else if(type === "magic_stuff_seed"){const colors = ["#ff0000","#ff7f00","#ffff00","#00ff00","#0000ff","#8f00ff"];px(1,1,6,6,"#111");for(let i = 0; i < 6; i++){px(2, i+1, 4, 1, colors[i]);}px(3,3,1,1,"#ffffff");px(4,4,1,1,"#ffffff");}
+else if(type === "metal_plate_seed"){px(1,1,6,6,"#5f646b");px(2,2,4,4,"#7a8088");px(3,3,2,2,"#c0c6cf");}
+else if(type === "red_brick_seed"){px(1,1,6,6,"#8c2f2f");px(3,3,2,2,"#d65a5a");}
+    border();ctx.restore();}
 function drawSeedCombineHint(){
     if(!hotbar.block || !hotbar.block.includes("_seed")) return;
     const playerTileX = Math.floor(player.x / blockSize);
@@ -927,70 +884,20 @@ if(graniteIcon){
 let currentOffset = 0;
 let isDraggingUI = false;
 let selectedSlot = 0;
-document.addEventListener("touchstart", (e) => {
-    if(e.target.tagName === "BUTTON") return;
-    uiStartY = e.touches[0].clientY;
-    isDraggingUI = true;
-});
-document.addEventListener("touchmove", (e) => {
-    if(e.target.closest("#inventoryUI")) return;
-    if(!isDraggingUI) return;
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - uiStartY;
-    let newOffset = currentOffset - diff;
-    newOffset = Math.max(0, Math.min(220, newOffset));
-    ui.style.transform = `translateY(${newOffset}px)`;
-});
-document.addEventListener("touchend", (e) => {
-    if(!isDraggingUI) return;
-    isDraggingUI = false;
-    const currentY = e.changedTouches[0].clientY;
-    const diff = currentY - uiStartY;
-    if(diff < -40) currentOffset = 0;
-    else if(diff > 40) currentOffset = 220;
-    ui.style.transform = `translateY(${currentOffset}px)`;
-});
-document.querySelectorAll("#inventoryUI .slot").forEach((el, i) => {
-    el.onclick = () => {
-        const items = Object.keys(inventory).filter(k => inventory[k] > 0);
-        const item = items[i];
-        if(!item) return;
-        hotbar.block = item;
-        updateHotbar();
-    };
-});
-document.querySelectorAll("#inventoryUI .slot").forEach(slot=>{
-    const canvas = document.createElement("canvas");
-    canvas.width = 40;
-    canvas.height = 40;
-    slot.appendChild(canvas);
-    const count = document.createElement("div");
-    count.className = "count";
-    slot.appendChild(count);
-});
-document.querySelectorAll("#hotbar .slot").forEach((slot, i) => {
-    slot.onclick = () => {
-        hotbar.selected = i;
-        updateHotbar();
-    };
-});
+document.addEventListener("touchstart", (e) => {if(e.target.tagName === "BUTTON") return;uiStartY = e.touches[0].clientY;isDraggingUI = true;});
+document.addEventListener("touchmove", (e) => {if(e.target.closest("#inventoryUI")) return;if(!isDraggingUI) return;const currentY = e.touches[0].clientY;const diff = currentY - uiStartY;let newOffset = currentOffset - diff;newOffset = Math.max(0, Math.min(220, newOffset));ui.style.transform = `translateY(${newOffset}px)`;});
+document.addEventListener("touchend", (e) => {if(!isDraggingUI) return;isDraggingUI = false;const currentY = e.changedTouches[0].clientY;const diff = currentY - uiStartY;if(diff < -40) currentOffset = 0;else if(diff > 40) currentOffset = 220;ui.style.transform = `translateY(${currentOffset}px)`;});
+document.querySelectorAll("#inventoryUI .slot").forEach((el, i) => {el.onclick = () => {const items = Object.keys(inventory).filter(k => inventory[k] > 0);const item = items[i];if(!item) return;hotbar.block = item;updateHotbar();};});
+document.querySelectorAll("#inventoryUI .slot").forEach(slot=>{const canvas = document.createElement("canvas");canvas.width = 40;canvas.height = 40;slot.appendChild(canvas);const count = document.createElement("div");count.className = "count";slot.appendChild(count);});
+document.querySelectorAll("#hotbar .slot").forEach((slot, i) => {slot.onclick = () => {hotbar.selected = i;updateHotbar();};});
 function updateInventoryUI(){
     const slots = document.querySelectorAll("#inventoryUI .slot");
     const items = Object.keys(inventory).filter(k => inventory[k] > 0);
     slots.forEach((slot, i) => {
         let canvas = slot.querySelector("canvas");
         let count = slot.querySelector(".count");
-        if(!canvas){
-            canvas = document.createElement("canvas");
-            canvas.width = 40;
-            canvas.height = 40;
-            slot.appendChild(canvas);
-        }
-        if(!count){
-            count = document.createElement("div");
-            count.className = "count";
-            slot.appendChild(count);
-        }
+        if(!canvas){canvas = document.createElement("canvas");canvas.width = 40;canvas.height = 40;slot.appendChild(canvas);}
+        if(!count){count = document.createElement("div");count.className = "count";slot.appendChild(count);}
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0,0,40,40);
         const item = items[i];
@@ -1003,15 +910,8 @@ function updateInventoryUI(){
         count.style.color = item === "marble" ? "black" : "white";
     });
 }
-function isInventoryFull(){
-    const maxSlots = document.querySelectorAll("#inventoryUI .slot").length;
-    const usedSlots = Object.keys(inventory).filter(k => inventory[k] > 0).length;
-const hasFreeStack = Object.values(inventory).some(v => v > 0 && v < MAX_STACK);
-return usedSlots >= maxSlots && !hasFreeStack;
-}
-function showInventoryFull(){
-    inventoryFullMessageTime = Date.now();
-}
+function isInventoryFull(){const maxSlots = document.querySelectorAll("#inventoryUI .slot").length;const usedSlots = Object.keys(inventory).filter(k => inventory[k] > 0).length;const hasFreeStack = Object.values(inventory).some(v => v > 0 && v < MAX_STACK);return usedSlots >= maxSlots && !hasFreeStack;}
+function showInventoryFull(){inventoryFullMessageTime = Date.now();}
 function updateHotbar() {
     const slots = document.querySelectorAll("#hotbar .slot");
     slots.forEach((slot, i) => {
@@ -1026,34 +926,10 @@ function updateHotbar() {
         slot.appendChild(count);
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0,0,40,40);
-        if(i === 0){
-            ctx.fillStyle = "white";
-            ctx.font = "28px Arial";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle"; 
-            ctx.fillText("✊", 20, 20);
-            return;
-        }
-        if(i === 2){
-            ctx.fillStyle = "white";
-            ctx.font = "28px Arial";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText("🔧", 20, 20);
-            return;
-        }
-        if(i === 1 && hotbar.block){
-            drawItemIcon(ctx, hotbar.block);
-            const amount = inventory[hotbar.block] || 0;
-            if(amount > 0){
-                count.innerText = amount;
-                count.style.color = hotbar.block === "marble" ? "black" : "white";
-            } else {
-                count.innerText = "";
-            }
-        }
-    });
-}
+        if(i === 0){ctx.fillStyle = "white";ctx.font = "28px Arial";ctx.textAlign = "center";ctx.textBaseline = "middle";ctx.fillText("✊", 20, 20);return;}
+        if(i === 2){ctx.fillStyle = "white";ctx.font = "28px Arial";ctx.textAlign = "center";ctx.textBaseline = "middle";ctx.fillText("🔧", 20, 20);return;}
+        if(i === 1 && hotbar.block){drawItemIcon(ctx, hotbar.block);const amount = inventory[hotbar.block] || 0;
+            if(amount > 0){count.innerText = amount;count.style.color = hotbar.block === "marble" ? "black" : "white";} else {count.innerText = "";}}});}
 function drawTexture(ctx, textureKey, x, y, size){
     if(!blockTextures[textureKey]){
         blockTextures[textureKey] = generateBlockTexture(textureKey);
@@ -1091,259 +967,220 @@ if(drops.length >= MAX_DROPS) return;
 function updateDrops() {
     drops.forEach(drop => {
         drop.yOffset = Math.sin(Date.now()/300 + drop.offset) * drop.amplitude;
-        if(player.x < drop.x + drop.width &&
-           player.x + player.width > drop.x &&
-           player.y < drop.y + drop.height &&
-           player.y + player.height > drop.y) {
-const isNewItem = inventory[drop.type] === undefined || inventory[drop.type] === 0;
-
-if(isNewItem && isInventoryFull()){
-    showInventoryFull();
-    return;
-}
-if (drop.type === "gem") {
-    gems++;
-    updateGemsUI();
-} else {
-    if (inventory[drop.type] === undefined) {
-        inventory[drop.type] = 0;
-    }
-    if(inventory[drop.type] < MAX_STACK){
-    inventory[drop.type]++;
-} else {
-    showInventoryFull();
-    return;
-}
-}
-drop.collected = true;
-updateInventoryUI();
-updateHotbar();
-        }
+        if(player.x < drop.x + drop.width &&player.x + player.width > drop.x &&player.y < drop.y + drop.height &&player.y + player.height > drop.y) {const isNewItem = inventory[drop.type] === undefined || inventory[drop.type] === 0;if(isNewItem && isInventoryFull()){showInventoryFull();return;}if (drop.type === "gem") {gems++;updateGemsUI();} else {if (inventory[drop.type] === undefined) {inventory[drop.type] = 0;}if(inventory[drop.type] < MAX_STACK){inventory[drop.type]++;} else {showInventoryFull();return;}}drop.collected = true;updateInventoryUI();updateHotbar();}
     });
-    for(let i = drops.length - 1; i >= 0; i--){
-    if(drops[i].collected){
-        drops.splice(i, 1);
-    }
+    for(let i = drops.length - 1; i >= 0; i--){if(drops[i].collected){drops.splice(i, 1);}}
 }
-}
-function drawDrops() {
-    drops.forEach(drop => {
-        const dx = Math.floor((drop.x - camera.x) * zoom);
-        const dy = Math.floor((drop.y + (drop.yOffset || 0) - camera.y) * zoom);
-        ctx.save();
-        ctx.translate(dx, dy);
-        const s = 16 * zoom;
-        const p = s / 8;
-        function px(x,y,w,h,color){
-            ctx.fillStyle = color;
-            ctx.fillRect(x*p, y*p, w*p, h*p);
-        }
-        let textureKey = drop.type;
-if(drop.type === "soil"){
-    textureKey = "soil_grass";
-}
-
-drawTexture(
-    ctx,
-    textureKey,
-    0,
-    0,
-    s
-);
-        ctx.restore();
-    });
-}
+function drawDrops() {drops.forEach(drop => {const dx = Math.floor((drop.x - camera.x) * zoom);const dy = Math.floor((drop.y + (drop.yOffset || 0) - camera.y) * zoom);ctx.save();ctx.translate(dx, dy);const s = 16 * zoom;const p = s / 8;function px(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p, y*p, w*p, h*p);}let textureKey = drop.type;if(drop.type === "soil"){textureKey = "soil_grass";}drawTexture(ctx,textureKey,0,0,s);ctx.restore();});}
 function startBreaking(mouseX, mouseY, instant = false) {
-    const rect = canvas.getBoundingClientRect();
-    const worldX = Math.floor(
-        (mouseX - rect.left) / zoom / blockSize + camera.x / blockSize
-    );
-    const worldY = Math.floor(
-        (mouseY - rect.top) / zoom / blockSize + camera.y / blockSize
-    );
+    const rect = canvas.getBoundingClientRect();const worldX = Math.floor((mouseX - rect.left) / zoom / blockSize + camera.x / blockSize);
+    const worldY = Math.floor((mouseY - rect.top) / zoom / blockSize + camera.y / blockSize);
     const px = Math.floor(player.x / blockSize);
     const py = Math.floor(player.y / blockSize);
 const dx = worldX - px;
 const dy = worldY - py;
+if(worldOwner && !worldPublic){
+const displayName =
+playerName && playerName.trim() !== ""
+? playerName
+: "Unnamed";
+const targetBlock =
+world[worldY]?.[worldX];
+if(
+displayName !== worldOwner &&
+targetBlock !== 20
+){
+addChatMessage("[WORLD] You can't break here!");
+return;
+}
+}
 if(dx*dx + dy*dy > 9) return;
     const tree = trees.find(t => t.x === worldX && t.y === worldY);
-    if (tree) {
-        if (tree.stage < 2) return;
-        let dropType = null;
-if(tree.type.endsWith("_seed")){
-    dropType = tree.type.replace("_seed", "");
+    if (tree) {if (tree.stage < 2) return;let dropType = null;if(tree.type.endsWith("_seed")){dropType = tree.type.replace("_seed", "");}if(!dropType) return;const dropsCount = Math.floor(Math.random() * 6) + 1;for (let i = 0; i < dropsCount; i++) {spawnDrop(worldX, worldY, dropType);}trees = trees.filter(t => t !== tree);if (px === worldX && py === worldY) {player.y -= blockSize;player.velY = -2;}updateInventoryUI();updateHotbar();breaking = null;return;}
+    let block = world[worldY]?.[worldX] || 0;
+    let isBackground = false;
+if(block === 0){block = background[worldY]?.[worldX] || 0;if(block === 3){isBackground = true;}}
+    if (!block || block === 0) return;const hitsNeeded = BLOCKS[block]?.hits || 2;
+    if (!breaking) {breaking = {x: worldX,y: worldY,progress: 0,maxProgress: hitsNeeded,lastHitTime: Date.now()};} else {if (breaking.x === worldX && breaking.y === worldY) {if (instant) {breaking.progress++;breaking.lastHitTime = Date.now();}} else {breaking = {x: worldX,y: worldY,progress: 0,maxProgress: hitsNeeded,lastHitTime: Date.now()};}}}
+function openWorldLockMenu(mouseX,mouseY){
+    const rect=canvas.getBoundingClientRect(),
+    worldX=Math.floor((mouseX-rect.left)/zoom/blockSize+camera.x/blockSize),
+    worldY=Math.floor((mouseY-rect.top)/zoom/blockSize+camera.y/blockSize);
+    if(world[worldY]?.[worldX]!==20)return;
+    const displayName=
+    playerName&&playerName.trim()!==""
+    ?playerName.trim()
+    :"Unnamed";
+    if(!worldOwner)return;
+    if(displayName!==worldOwner)return;
+    worldLockPanel.style.display="block";
+    worldLockMenuOpen=true;
+    publicWorldToggle.checked=worldPublic;
+    worldBackgroundSelect.value=worldBackground;
 }
-if(!dropType) return;
-        const dropsCount = Math.floor(Math.random() * 6) + 1;
-        for (let i = 0; i < dropsCount; i++) {spawnDrop(worldX, worldY, dropType);}
-        trees = trees.filter(t => t !== tree);
-        if (px === worldX && py === worldY) {player.y -= blockSize;player.velY = -2;}
-        updateInventoryUI();
-        updateHotbar();
-        breaking = null;
-        return;
+function updateBreaking(){
+    if(!breaking)return;
+    const now=Date.now(),{x,y}=breaking;
+    let block=world[y]?.[x]||0,isBackground=false;
+    if(!block&&(block=background[y]?.[x]||0)&&block===3)isBackground=true;
+    if(!block||block===8)return breaking=null;
+    breaking.maxProgress=BLOCKS[block]?.hits||2;
+    if(isBreakingHeld&&now-breaking.lastHitTime>=200){
+        breaking.progress++;
+        breaking.lastHitTime=now;
     }
-    let block = world[worldY]?.[worldX];
-    if (!block || block === 0) {
-        block = background[worldY]?.[worldX];
-    }
-    if (!block || block === 0) return;
-    const hitsNeeded = BLOCKS[block]?.hits || 2;
-    if (!breaking) {
-        breaking = {
-            x: worldX,
-            y: worldY,
-            progress: 0,
-            maxProgress: hitsNeeded,
-            lastHitTime: Date.now()
-        };
-    } else {
-        if (breaking.x === worldX && breaking.y === worldY) {
-            if (instant) {
-                breaking.progress++;
-                breaking.lastHitTime = Date.now();
-            }
-        } 
-        else {
-            breaking = {
-                x: worldX,
-                y: worldY,
-                progress: 0,
-                maxProgress: hitsNeeded,
-                lastHitTime: Date.now()
-            };
-        }
-    }
-}
-function updateBreaking() {
-    if (!breaking) return;
-    const now = Date.now();
-    const { x, y } = breaking;
-    let block = world[y]?.[x];
-    if (!block || block === 0) {block = background[y]?.[x];}
-    if (!block || block === 0) {breaking = null;return;}
-    if (block === 8) {breaking = null;return;}
-    breaking.maxProgress = BLOCKS[block]?.hits || 2;
-    if (isBreakingHeld && now - breaking.lastHitTime >= 200) {breaking.progress++;breaking.lastHitTime = now;}
-    if (breaking.progress < breaking.maxProgress) return;
-    const gemChance = block === 13 ? 1 : 0.4;
-    if (Math.random() < gemChance) {spawnDrop(x, y, "gem");}
+    if(breaking.progress<breaking.maxProgress)return;
+    if(Math.random()<(block===20?0:block===13?1:0.4))spawnDrop(x,y,"gem");
     updateGemsUI();
-    const rand = Math.random() * 100;
-    const DROP_MAP = {
-        1:  { block: "soil", seed: "soil_seed", nothing: 40, blockChance: 35 },
-        2:  { block: "granite", seed: "granite_seed", nothing: 45, blockChance: 39 },
-        3:  { block: "cave_bg", seed: "cave_bg_seed", nothing: 40, blockChance: 35 },
-        4:  { block: "grass", seed: "grass_seed", nothing: 40, blockChance: 35 },
-        5:  { block: "lava", seed: "lava_seed", nothing: 35, blockChance: 35 },
-        6:  { block: "wood", seed: "wood_seed", nothing: 40, blockChance: 35 },
-        7:  { block: "obsidian", seed: "obsidian_seed", nothing: 40, blockChance: 40 },
-        9:  { block: "marble", seed: "marble_seed", nothing: 40, blockChance: 35 },
-        10: { block: "sand", seed: "sand_seed", nothing: 40, blockChance: 35 },
-        11: { block: "sandstone", seed: "sandstone_seed", nothing: 45, blockChance: 40 },
-        12: { block: "water", seed: "water_seed", nothing: 40, blockChance: 40 },
-        13: { block: "gem_soil", seed: "gem_soil_seed", nothing: 40, blockChance: 40 },
-        14: { block: "black_brick", seed: "black_brick_seed", nothing: 40, blockChance: 40 },
-        15: { block: "concrete_block_1x1", seed: "concrete_block_1x1_seed", nothing: 40, blockChance: 40 },
-        16: { block: "glass", seed: "glass_seed", nothing: 40, blockChance: 40 },
-        17: { block: "magic_stuff", seed: "magic_stuff_seed", nothing: 40, blockChance: 40 },
-        18: { block: "metal_plate", seed: "metal_plate_seed", nothing: 40, blockChance: 40 },
-        19: { block: "red_brick", seed: "red_brick_seed", nothing: 40, blockChance: 40 }
+    const DROP_MAP={
+        1:{block:"soil",seed:"soil_seed",nothing:40,blockChance:35},
+        2:{block:"granite",seed:"granite_seed",nothing:45,blockChance:39},
+        3:{block:"cave_bg",seed:"cave_bg_seed",nothing:40,blockChance:35},
+        4:{block:"grass",seed:"grass_seed",nothing:40,blockChance:35},
+        5:{block:"lava",seed:"lava_seed",nothing:35,blockChance:35},
+        6:{block:"wood",seed:"wood_seed",nothing:40,blockChance:35},
+        7:{block:"obsidian",seed:"obsidian_seed",nothing:40,blockChance:40},
+        9:{block:"marble",seed:"marble_seed",nothing:40,blockChance:35},
+        10:{block:"sand",seed:"sand_seed",nothing:40,blockChance:35},
+        11:{block:"sandstone",seed:"sandstone_seed",nothing:45,blockChance:40},
+        12:{block:"water",seed:"water_seed",nothing:40,blockChance:40},
+        13:{block:"gem_soil",seed:"gem_soil_seed",nothing:40,blockChance:40},
+        14:{block:"black_brick",seed:"black_brick_seed",nothing:40,blockChance:40},
+        15:{block:"concrete_block_1x1",seed:"concrete_block_1x1_seed",nothing:40,blockChance:40},
+        16:{block:"glass",seed:"glass_seed",nothing:40,blockChance:40},
+        17:{block:"magic_stuff",seed:"magic_stuff_seed",nothing:40,blockChance:40},
+        18:{block:"metal_plate",seed:"metal_plate_seed",nothing:40,blockChance:40},
+        19:{block:"red_brick",seed:"red_brick_seed",nothing:40,blockChance:40},
+        20:{block:"world_lock",seed:null,nothing:0,blockChance:100}
     };
-    const cfg = DROP_MAP[block];
-    let dropBlock = null;
-    let dropSeed = null;
-    if (cfg) {const r = Math.random() * 100;if (r >= cfg.nothing) {const mid = cfg.nothing + cfg.blockChance;if (r < mid) {dropBlock = cfg.block;} else {dropSeed = cfg.seed;}}}
-    if (dropBlock) spawnDrop(x, y, dropBlock);
-    if (dropSeed) spawnDrop(x, y, dropSeed);
-    if (world[y]?.[x]) world[y][x] = 0;
-    else if (background[y]?.[x]) background[y][x] = 0;
-    breaking = null;
-    updateInventoryUI();
-    updateHotbar();
-}
-function placeBlock(mouseX, mouseY) {
-    const rect = canvas.getBoundingClientRect();
-    const worldX = Math.floor(
-        (mouseX - rect.left) / zoom / blockSize + camera.x / blockSize
-    );
-    const worldY = Math.floor(
-        (mouseY - rect.top) / zoom / blockSize + camera.y / blockSize
-    );
-    const px = Math.floor(player.x / blockSize);
-    const py = Math.floor(player.y / blockSize);
-const dx = worldX - px;
-const dy = worldY - py;
-if(dx*dx + dy*dy > 9) return;
-    if (!hotbar.block || !inventory[hotbar.block] || inventory[hotbar.block] <= 0) {hotbar.block = null;hotbar.selected = 0;updateHotbar();return;}
-    const item = hotbar.block;
-    const isSeed = item.includes("_seed");
-    const isBg = item === "cave_bg";
-    const existingTree = trees.find(t => t.x === worldX && t.y === worldY);
-    const worldCell = world[worldY]?.[worldX] ?? 0;
-    const bgCell = background[worldY]?.[worldX] ?? 0;
-    if (isSeed) {
-    const existingTree = trees.find(t => t.x === worldX && t.y === worldY);
-    const worldCell = world[worldY]?.[worldX] ?? 0;
-    if (existingTree) {
-        const result = getSeedResult(existingTree.type, item);
-        if (!result) return;
-        trees = trees.filter(t => t !== existingTree);
-        trees.push({x: worldX,y: worldY,type: result,stage: 0,plantedAt: Date.now(),growTime:item === "concrete_block_1x1_seed" ? 60000 :item === "glass_seed" ? 60000 :item === "magic_stuff_seed" ? 60000 :item === "metal_plate_seed" ? 60000 :item === "red_brick_seed" ? 60000 :30000});
-        inventory[item]--;
-        if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}
+    const cfg=DROP_MAP[block];
+    let dropBlock=null,dropSeed=null;
+    if(cfg){
+        const r=Math.random()*100,mid=cfg.nothing+cfg.blockChance;
+        if(r>=cfg.nothing)r<mid?dropBlock=cfg.block:dropSeed=cfg.seed;
+    }
+    if(block===20){
+        inventory.world_lock++;
         updateInventoryUI();
         updateHotbar();
-        return;
+        const displayName=playerName?.trim()?playerName:"Unnamed";
+        addChatMessage(`<${displayName}> unlocked world`);
+        worldOwner=null;
+        worldLockPos=null;
+    }else{
+        if(dropBlock)spawnDrop(x,y,dropBlock);
+        if(dropSeed)spawnDrop(x,y,dropSeed);
     }
-    if (worldCell !== 0) return;
-    const below = world[worldY + 1]?.[worldX];
-    if (!below || !BLOCKS[below]?.solid) return;
-    trees.push({
-        x: worldX,
-        y: worldY,
-        type: item,
-        stage: 0,
-        plantedAt: Date.now(),
-        growTime: 30000
-    });
-    inventory[item]--;
-    if (inventory[item] <= 0) {
-        inventory[item] = 0;
-        hotbar.block = null;
-        hotbar.selected = 0;
-    }
+    isBackground?background[y][x]=0:world[y][x]=0;
+    breaking=null;
     updateInventoryUI();
     updateHotbar();
-    return;
 }
-    if (isBg) {if (!background[worldY]) background[worldY] = [];if (bgCell !== 0) return;background[worldY][worldX] = 3;inventory[item]--;if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}updateInventoryUI();updateHotbar();return;}
-if (existingTree) return;
-if (worldCell !== 0) return;
-    const blockLeft = worldX * blockSize;
-    const blockRight = blockLeft + blockSize;
-    const blockTop = worldY * blockSize;
-    const blockBottom = blockTop + blockSize;
-    const playerLeft = player.x;
-    const playerRight = player.x + player.width;
-    const playerTop = player.y;
-    const playerBottom = player.y + player.height;
-    const overlap =
-        playerRight > blockLeft &&
-        playerLeft < blockRight &&
-        playerBottom > blockTop &&
-        playerTop < blockBottom;
-    if (overlap) return;
-    if(!world[worldY]) world[worldY] = [];
-
-const PLACE_MAP = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19};
-const blockId = PLACE_MAP[item];
-if(blockId === undefined) return;world[worldY][worldX] = blockId;
+function placeBlock(mouseX,mouseY){
+const r=canvas.getBoundingClientRect(),
+worldX=Math.floor((mouseX-r.left)/zoom/blockSize+camera.x/blockSize),
+worldY=Math.floor((mouseY-r.top)/zoom/blockSize+camera.y/blockSize),
+px=Math.floor(player.x/blockSize),
+py=Math.floor(player.y/blockSize),
+dx=worldX-px,
+dy=worldY-py;
+if(dx*dx+dy*dy>9)return;
+if(!hotbar.block||!inventory[hotbar.block]){hotbar.block=null;hotbar.selected=0;updateHotbar();return;}
+const item=hotbar.block,
+name=playerName?.trim()||"Unnamed",
+isSeed=item.includes("_seed"),
+isBg=item==="cave_bg",
+tree=trees.find(t=>t.x===worldX&&t.y===worldY),
+cell=world[worldY]?.[worldX]??0,
+bg=background[worldY]?.[worldX]??0;
+if(
+worldOwner &&
+name!==worldOwner &&
+item!=="world_lock"
+){
+addChatMessage("[WORLD] This world belongs to another player!");
+return;
+}
+if(isSeed){
+if(tree){
+const result=getSeedResult(tree.type,item);
+if(!result)return;
+trees=trees.filter(t=>t!==tree);
+trees.push({
+x:worldX,
+y:worldY,
+type:result,
+stage:0,
+plantedAt:Date.now(),
+growTime:["concrete_block_1x1_seed","glass_seed","magic_stuff_seed","metal_plate_seed","red_brick_seed"].includes(item)?60000:30000
+});
+}else{
+if(cell)return;
+const below=world[worldY+1]?.[worldX];
+if(!below||!BLOCKS[below]?.solid)return;
+trees.push({
+x:worldX,
+y:worldY,
+type:item,
+stage:0,
+plantedAt:Date.now(),
+growTime:30000
+});
+}
 inventory[item]--;
-    if (inventory[item] <= 0) {inventory[item] = 0;hotbar.block = null;hotbar.selected = 0;}
-    updateInventoryUI();
-    updateHotbar();
+if(inventory[item]<=0){
+inventory[item]=0;
+hotbar.block=null;
+hotbar.selected=0;
 }
+updateInventoryUI();
+updateHotbar();
+return;
+}
+if(isBg){
+if(!background[worldY])background[worldY]=[];
+if(bg)return;
+background[worldY][worldX]=3;
+inventory[item]--;
+if(inventory[item]<=0){
+inventory[item]=0;
+hotbar.block=null;
+hotbar.selected=0;
+}
+updateInventoryUI();
+updateHotbar();
+return;
+}
+if(tree||cell)return;
+const bl=worldX*blockSize,
+br=bl+blockSize,
+bt=worldY*blockSize,
+bb=bt+blockSize,
+pl=player.x,
+pr=player.x+player.width,
+pt=player.y,
+pb=player.y+player.height;
+if(pr>bl&&pl<br&&pb>bt&&pt<bb)return;
+if(!world[worldY])world[worldY]=[];
+const PLACE_MAP={soil:1,granite:2,grass:4,lava:5,wood:6,obsidian:7,marble:9,sand:10,sandstone:11,water:12,gem_soil:13,black_brick:14,concrete_block_1x1:15,glass:16,magic_stuff:17,metal_plate:18,red_brick:19,world_lock:20};
+const id=PLACE_MAP[item];
+if(id===undefined)return;
+if(id===20){
+if(worldOwner){
+addChatMessage("[WORLD] This world is already locked!");
+return;
+}
+if(name==="Unnamed"){
+addChatMessage("[WORLD] Set your player name first!");
+return;
+}
+}
+world[worldY][worldX]=id;
+if(id===20){worldOwner=name;worldLockPos={x:worldX,y:worldY};addChatMessage(`<${name}> locked this world`);}
+inventory[item]--;
+if(inventory[item]<=0){inventory[item]=0;hotbar.block=null;hotbar.selected=0;}
+updateInventoryUI();
+updateHotbar();}
 requestAnimationFrame(loop);
 </script>    
 </body>    
