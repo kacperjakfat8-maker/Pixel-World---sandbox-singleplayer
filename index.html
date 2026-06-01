@@ -1244,9 +1244,48 @@ function update(deltaTime) {
     if(player.velY < 0) player.onGround = false;
 }
 let lastTime = performance.now();
-function saveGame(){localStorage.setItem("saveGame_v1",JSON.stringify({world,background,spawnY,player:{x:player.x,y:player.y,velX:player.velX,velY:player.velY},inventory,hotbar,gems,playerName,worldBackground,worldPublic,worldOwner,worldLockState,scaryMode,shadersEnabled,blindnessActive,unlockedAchievements,indexProgress,drops:drops.map(d=>({id:d.id,x:d.x,y:d.y,type:d.type,count:d.count,offset:d.offset,amplitude:d.amplitude}))}))}
-function loadGame(){
-const raw=localStorage.getItem("saveGame_v1");
+function saveGame() {
+    const data = {
+        world,
+        background,
+        spawnY,
+
+        player: {
+            x: player.x,
+            y: player.y,
+            velX: player.velX,
+            velY: player.velY
+        },
+
+        inventory,
+        hotbar,
+        gems,
+        playerName,
+
+        worldBackground,
+        worldPublic,
+        worldOwner,
+        worldLockState,
+
+        scaryMode,
+        shadersEnabled,
+        blindnessActive,
+
+        unlockedAchievements,
+        indexProgress,
+
+        drops: drops.map(d => ({
+            x: d.x,
+            y: d.y,
+            type: d.type,
+            count: d.count,
+            offset: d.offset,
+            amplitude: d.amplitude
+        }))
+    };
+
+    localStorage.setItem("saveGame_v1", JSON.stringify(data));
+    }const raw=localStorage.getItem("saveGame_v1");
 if(!raw)return;
 const d=JSON.parse(raw);
 world=d.world??world;
@@ -1269,14 +1308,51 @@ worldLockState=d.worldLockState??worldLockState;
 scaryMode=d.scaryMode??scaryMode;
 shadersEnabled=d.shadersEnabled??shadersEnabled;
 blindnessActive=d.blindnessActive??blindnessActive;
+function saveGame(){
+localStorage.setItem("saveGame_v1",JSON.stringify({
+world,background,spawnY,
+player:{x:player.x,y:player.y,velX:player.velX,velY:player.velY},
+inventory,hotbar,gems,playerName,
+worldBackground,worldPublic,worldOwner,worldLockState,
+scaryMode,shadersEnabled,blindnessActive,
+unlockedAchievements,indexProgress,
+drops:drops.map(d=>({x:d.x,y:d.y,type:d.type,count:d.count,offset:d.offset,amplitude:d.amplitude}))
+}));
+}
+function loadGame(){
+const r=localStorage.getItem("saveGame_v1");
+if(!r)return;
+const d=JSON.parse(r);
+if(d.world)world=d.world;
+if(d.background)background=d.background;
+if(d.spawnY!==undefined)spawnY=d.spawnY;
+if(d.player){
+player.x=d.player.x??player.x;
+player.y=d.player.y??player.y;
+player.velX=d.player.velX??0;
+player.velY=d.player.velY??0;
+}
+if(d.inventory)inventory=d.inventory;
+if(d.hotbar)hotbar=d.hotbar;
+gems=d.gems??gems;
+playerName=d.playerName??playerName;
+worldBackground=d.worldBackground??worldBackground;
+worldPublic=d.worldPublic??worldPublic;
+worldOwner=d.worldOwner??worldOwner;
+worldLockState=d.worldLockState??worldLockState;
+scaryMode=d.scaryMode??scaryMode;
+shadersEnabled=d.shadersEnabled??shadersEnabled;
+blindnessActive=d.blindnessActive??blindnessActive;
 unlockedAchievements=d.unlockedAchievements??unlockedAchievements;
 indexProgress=d.indexProgress??indexProgress;
-drops=(d.drops??[]).map(d=>({id:d.id,x:d.x,y:d.y,type:d.type,count:d.count??1,offset:d.offset??Math.random()*Math.PI*2,amplitude:d.amplitude??4,width:16,height:16,collected:false}));
+if(Array.isArray(d.drops)){
+drops=d.drops.map(d=>({x:d.x,y:d.y,type:d.type,count:d.count??1,offset:d.offset??Math.random()*Math.PI*2,amplitude:d.amplitude??4,width:16,height:16,collected:false}));
+}
 updateInventoryUI();
 updateHotbar();
 updateGemsUI();
 updateBackground();
-}
+    }
 function loop(t){
 let dt=(t-lastTime)/16.6667;
 if(dt>2)dt=2;
