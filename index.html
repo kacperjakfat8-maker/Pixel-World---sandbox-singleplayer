@@ -1,4 +1,4 @@
-no<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -152,7 +152,7 @@ let width = 100;
 let height = 100;
 let spawnY = 0;
 let isBreakingHeld = false;
-let gems = 0;
+let gems = 1000;
 let waterTime = 0;
 let playerChat = "";
 let playerChatTime = 0;
@@ -248,7 +248,7 @@ settingsPanel.style.display="block";
 e.preventDefault();
 settingsPanel.style.display="none";
 mainMenu.style.display="block";
-    },{passive:false});
+},{passive:false});
 shopBtn.onclick = () => {mainMenu.style.display = "none";shopPanel.style.display = "block";};
 backFromShopBtn.onclick = () => {shopPanel.style.display = "none";mainMenu.style.display = "block";};
 indexBtn.onclick = () => {mainMenu.style.display = "none";indexPanel.style.display = "block";};
@@ -613,9 +613,7 @@ function hasSolidNeighbor(x, y){const neighbors = [world[y+1]?.[x],world[y-1]?.[
 function damagePlayer(amount){playerHealth-=amount;if(playerHealth<0)playerHealth=0;player.lastDamageTime=Date.now();}
 let jumpLock=false;
 function respawnPlayer(){player.x=spawnX;player.y=spawnY-blockSize*0.9;player.velX=0;player.velY=0;playerHealth=MAX_HEALTH;playerAir=MAX_AIR;player.hp=120;player.maxHp=120;player.air=100;player.maxAir=100;player.lastDamageTime=0;}
-requestAnimationFrame(() => {
-    loadGame();
-});
+generateTerrain();generateWaterLayer();
 const spawnX=centerX*blockSize;
 let player={x:spawnX,y:spawnY-blockSize*0.9,width:blockSize*0.6,height:blockSize*0.9,velX:0,velY:0,onGround:true};
 const MAX_HEALTH=120,MAX_AIR=100;
@@ -1244,128 +1242,13 @@ function update(deltaTime) {
     if(player.velY < 0) player.onGround = false;
 }
 let lastTime = performance.now();
-function saveGame(){
-    const data = {
-        world: Array.isArray(world) ? world : null,
-        background,
-        spawnY,
-
-        player: {
-            x: player.x,
-            y: player.y,
-            velX: player.velX,
-            velY: player.velY
-        },
-
-        inventory: Array.isArray(inventory) ? inventory : [],
-        hotbar: Array.isArray(hotbar) ? hotbar : [],
-        gems,
-
-        playerName,
-
-        worldBackground,
-        worldPublic,
-        worldOwner,
-        worldLockState,
-
-        scaryMode,
-        shadersEnabled,
-        blindnessActive,
-
-        unlockedAchievements,
-        indexProgress,
-
-        drops: Array.isArray(drops)
-            ? drops.map(d => ({
-                x: d.x,
-                y: d.y,
-                type: d.type,
-                count: d.count ?? 1,
-                offset: d.offset ?? 0,
-                amplitude: d.amplitude ?? 4
-            }))
-            : []
-    };
-
-    localStorage.setItem("saveGame_v1", JSON.stringify(data));
-}
-function loadGame(){
-    const raw = localStorage.getItem("saveGame_v1");
-    if(!raw) return false;
-
-    let data;
-    try {
-        data = JSON.parse(raw);
-    } catch (e) {
-        console.warn("Save corrupted");
-        return false;
-    }
-
-    if(!data || typeof data !== "object") return false;
-
-    // WORLD (najważniejsze zabezpieczenie)
-    if(Array.isArray(data.world) && data.world.length){
-        world = data.world;
-    }
-
-    if(data.background != null) background = data.background;
-    if(typeof data.spawnY === "number") spawnY = data.spawnY;
-
-    // PLAYER
-    if(data.player){
-        player.x = Number.isFinite(data.player.x) ? data.player.x : player.x;
-        player.y = Number.isFinite(data.player.y) ? data.player.y : player.y;
-        player.velX = Number.isFinite(data.player.velX) ? data.player.velX : 0;
-        player.velY = Number.isFinite(data.player.velY) ? data.player.velY : 0;
-    }
-
-    if(Array.isArray(data.inventory)) inventory = data.inventory;
-    if(Array.isArray(data.hotbar)) hotbar = data.hotbar;
-
-    if(typeof data.gems === "number") gems = data.gems;
-    if(typeof data.playerName === "string") playerName = data.playerName;
-
-    if(data.worldBackground) worldBackground = data.worldBackground;
-    if(data.worldPublic != null) worldPublic = data.worldPublic;
-    if(data.worldOwner) worldOwner = data.worldOwner;
-    if(data.worldLockState) worldLockState = data.worldLockState;
-
-    if(typeof data.scaryMode === "boolean") scaryMode = data.scaryMode;
-    if(typeof data.shadersEnabled === "boolean") shadersEnabled = data.shadersEnabled;
-    if(typeof data.blindnessActive === "boolean") blindnessActive = data.blindnessActive;
-
-    if(data.unlockedAchievements) unlockedAchievements = data.unlockedAchievements;
-    if(data.indexProgress) indexProgress = data.indexProgress;
-
-    // DROPS
-    if(Array.isArray(data.drops)){
-        drops = data.drops.map(d => ({
-            x: d.x ?? 0,
-            y: d.y ?? 0,
-            type: d.type,
-            count: d.count ?? 1,
-            offset: d.offset ?? Math.random() * Math.PI * 2,
-            amplitude: d.amplitude ?? 4,
-            width: 16,
-            height: 16,
-            collected: false
-        }));
-    }
-
-    updateInventoryUI?.();
-    updateHotbar?.();
-    updateGemsUI?.();
-    updateBackground?.();
-
-    return true;
-}
-function loop(t){
-let dt=(t-lastTime)/16.6667;
-if(dt>2)dt=2;
-lastTime=t;
-update(dt);
-draw();
-requestAnimationFrame(loop);
+function loop(currentTime){
+    let deltaTime = (currentTime - lastTime) / 16.6667;
+    if(deltaTime > 2) deltaTime = 2;
+    lastTime = currentTime;
+    update(deltaTime);
+    draw();
+    requestAnimationFrame(loop);
 }
 const graniteIcon = document.getElementById("graniteIcon");
 let graniteCtx = null;
@@ -1475,29 +1358,27 @@ amplitude:4,
 collected:false
 });
 }
-function updateDrops(){
-for(let i=0;i<drops.length;i++){
-for(let j=i+1;j<drops.length;j++){
-const a=drops[i],b=drops[j];
-if(a.type===b.type&&Math.hypot(a.x-b.x,a.y-b.y)<24){
-a.count+=b.count;
-drops.splice(j,1);j--;}}}
-for(let i=drops.length-1;i>=0;i--){
-const d=drops[i];
-d.yOffset=Math.sin(Date.now()/300+d.offset)*d.amplitude;
-const dx=player.x-d.x,dy=player.y-d.y;
-if(Math.hypot(dx,dy)<25){
-if(d.type==="gem"){
-gems+=d.count;
-updateGemsUI();
-}else{
-if(inventory[d.type]===undefined)inventory[d.type]=0;
-if(inventory[d.type]<MAX_STACK)inventory[d.type]+=d.count;
-else{showInventoryFull();continue;}
+function updateDrops() {
+    for(let i=0;i<drops.length;i++){
+    for(let j=i+1;j<drops.length;j++){
+        const a=drops[i];
+        const b=drops[j];
+        if(
+            a.type===b.type &&
+            Math.hypot(a.x-b.x,a.y-b.y)<24
+        ){
+            a.count+=b.count;
+            drops.splice(j,1);
+            j--;
+        }
+    }
 }
-updateInventoryUI();
-updateHotbar();
-drops.splice(i,1);}}}
+    drops.forEach(drop => {
+        drop.yOffset = Math.sin(Date.now()/300 + drop.offset) * drop.amplitude;
+        if(player.x < drop.x + drop.width &&player.x + player.width > drop.x &&player.y < drop.y + drop.height &&player.y + player.height > drop.y) {const isNewItem = inventory[drop.type] === undefined || inventory[drop.type] === 0;if(isNewItem && isInventoryFull()){showInventoryFull();return;}if (drop.type === "gem") {gems++;updateGemsUI();} else {if (inventory[drop.type] === undefined) {inventory[drop.type] = 0;}if(inventory[drop.type] < MAX_STACK){inventory[drop.type]+=drop.count;} else {showInventoryFull();return;}}drop.collected = true;updateInventoryUI();updateHotbar();}
+    });
+    for(let i = drops.length - 1; i >= 0; i--){if(drops[i].collected){drops.splice(i, 1);}}
+}
 function drawDrops() {drops.forEach(drop => {if(blindnessActive){
     const px = player.x;
     const py = player.y;
@@ -1686,10 +1567,4 @@ addChatMessage(`${name} unlocked the achievement [mine, not yours!]`,"achievemen
 inventory[item]--;if(!inventory[item]){inventory[item]=0;hotbar.block=null;hotbar.selected=0;}
 updateInventoryUI();updateHotbar();}
 requestAnimationFrame(loop);
-window.addEventListener("beforeunload", saveGame);
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        saveGame();
-    }
-});
 </script>    </body>    </html>
