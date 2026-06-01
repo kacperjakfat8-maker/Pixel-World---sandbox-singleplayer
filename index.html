@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+no<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -1244,9 +1244,9 @@ function update(deltaTime) {
     if(player.velY < 0) player.onGround = false;
 }
 let lastTime = performance.now();
-function saveGame() {
+function saveGame(){
     const data = {
-        world,
+        world: Array.isArray(world) ? world : null,
         background,
         spawnY,
 
@@ -1257,9 +1257,10 @@ function saveGame() {
             velY: player.velY
         },
 
-        inventory,
-        hotbar,
+        inventory: Array.isArray(inventory) ? inventory : [],
+        hotbar: Array.isArray(hotbar) ? hotbar : [],
         gems,
+
         playerName,
 
         worldBackground,
@@ -1274,85 +1275,90 @@ function saveGame() {
         unlockedAchievements,
         indexProgress,
 
-        drops: drops.map(d => ({
-            x: d.x,
-            y: d.y,
-            type: d.type,
-            count: d.count,
-            offset: d.offset,
-            amplitude: d.amplitude
-        }))
+        drops: Array.isArray(drops)
+            ? drops.map(d => ({
+                x: d.x,
+                y: d.y,
+                type: d.type,
+                count: d.count ?? 1,
+                offset: d.offset ?? 0,
+                amplitude: d.amplitude ?? 4
+            }))
+            : []
     };
 
     localStorage.setItem("saveGame_v1", JSON.stringify(data));
-    }const raw=localStorage.getItem("saveGame_v1");
-if(!raw)return;
-const d=JSON.parse(raw);
-world=d.world??world;
-background=d.background??background;
-spawnY=d.spawnY??spawnY;
-if(d.player){
-player.x=d.player.x??player.x;
-player.y=d.player.y??player.y;
-player.velX=d.player.velX??0;
-player.velY=d.player.velY??0;
-}
-inventory=d.inventory??inventory;
-hotbar=d.hotbar??hotbar;
-gems=d.gems??gems;
-playerName=d.playerName??playerName;
-worldBackground=d.worldBackground??worldBackground;
-worldPublic=d.worldPublic??worldPublic;
-worldOwner=d.worldOwner??worldOwner;
-worldLockState=d.worldLockState??worldLockState;
-scaryMode=d.scaryMode??scaryMode;
-shadersEnabled=d.shadersEnabled??shadersEnabled;
-blindnessActive=d.blindnessActive??blindnessActive;
-function saveGame(){
-localStorage.setItem("saveGame_v1",JSON.stringify({
-world,background,spawnY,
-player:{x:player.x,y:player.y,velX:player.velX,velY:player.velY},
-inventory,hotbar,gems,playerName,
-worldBackground,worldPublic,worldOwner,worldLockState,
-scaryMode,shadersEnabled,blindnessActive,
-unlockedAchievements,indexProgress,
-drops:drops.map(d=>({x:d.x,y:d.y,type:d.type,count:d.count,offset:d.offset,amplitude:d.amplitude}))
-}));
 }
 function loadGame(){
-const r=localStorage.getItem("saveGame_v1");
-if(!r)return;
-const d=JSON.parse(r);
-if(d.world)world=d.world;
-if(d.background)background=d.background;
-if(d.spawnY!==undefined)spawnY=d.spawnY;
-if(d.player){
-player.x=d.player.x??player.x;
-player.y=d.player.y??player.y;
-player.velX=d.player.velX??0;
-player.velY=d.player.velY??0;
-}
-if(d.inventory)inventory=d.inventory;
-if(d.hotbar)hotbar=d.hotbar;
-gems=d.gems??gems;
-playerName=d.playerName??playerName;
-worldBackground=d.worldBackground??worldBackground;
-worldPublic=d.worldPublic??worldPublic;
-worldOwner=d.worldOwner??worldOwner;
-worldLockState=d.worldLockState??worldLockState;
-scaryMode=d.scaryMode??scaryMode;
-shadersEnabled=d.shadersEnabled??shadersEnabled;
-blindnessActive=d.blindnessActive??blindnessActive;
-unlockedAchievements=d.unlockedAchievements??unlockedAchievements;
-indexProgress=d.indexProgress??indexProgress;
-if(Array.isArray(d.drops)){
-drops=d.drops.map(d=>({x:d.x,y:d.y,type:d.type,count:d.count??1,offset:d.offset??Math.random()*Math.PI*2,amplitude:d.amplitude??4,width:16,height:16,collected:false}));
-}
-updateInventoryUI();
-updateHotbar();
-updateGemsUI();
-updateBackground();
+    const raw = localStorage.getItem("saveGame_v1");
+    if(!raw) return false;
+
+    let data;
+    try {
+        data = JSON.parse(raw);
+    } catch (e) {
+        console.warn("Save corrupted");
+        return false;
     }
+
+    if(!data || typeof data !== "object") return false;
+
+    // WORLD (najważniejsze zabezpieczenie)
+    if(Array.isArray(data.world) && data.world.length){
+        world = data.world;
+    }
+
+    if(data.background != null) background = data.background;
+    if(typeof data.spawnY === "number") spawnY = data.spawnY;
+
+    // PLAYER
+    if(data.player){
+        player.x = Number.isFinite(data.player.x) ? data.player.x : player.x;
+        player.y = Number.isFinite(data.player.y) ? data.player.y : player.y;
+        player.velX = Number.isFinite(data.player.velX) ? data.player.velX : 0;
+        player.velY = Number.isFinite(data.player.velY) ? data.player.velY : 0;
+    }
+
+    if(Array.isArray(data.inventory)) inventory = data.inventory;
+    if(Array.isArray(data.hotbar)) hotbar = data.hotbar;
+
+    if(typeof data.gems === "number") gems = data.gems;
+    if(typeof data.playerName === "string") playerName = data.playerName;
+
+    if(data.worldBackground) worldBackground = data.worldBackground;
+    if(data.worldPublic != null) worldPublic = data.worldPublic;
+    if(data.worldOwner) worldOwner = data.worldOwner;
+    if(data.worldLockState) worldLockState = data.worldLockState;
+
+    if(typeof data.scaryMode === "boolean") scaryMode = data.scaryMode;
+    if(typeof data.shadersEnabled === "boolean") shadersEnabled = data.shadersEnabled;
+    if(typeof data.blindnessActive === "boolean") blindnessActive = data.blindnessActive;
+
+    if(data.unlockedAchievements) unlockedAchievements = data.unlockedAchievements;
+    if(data.indexProgress) indexProgress = data.indexProgress;
+
+    // DROPS
+    if(Array.isArray(data.drops)){
+        drops = data.drops.map(d => ({
+            x: d.x ?? 0,
+            y: d.y ?? 0,
+            type: d.type,
+            count: d.count ?? 1,
+            offset: d.offset ?? Math.random() * Math.PI * 2,
+            amplitude: d.amplitude ?? 4,
+            width: 16,
+            height: 16,
+            collected: false
+        }));
+    }
+
+    updateInventoryUI?.();
+    updateHotbar?.();
+    updateGemsUI?.();
+    updateBackground?.();
+
+    return true;
+}
 function loop(t){
 let dt=(t-lastTime)/16.6667;
 if(dt>2)dt=2;
