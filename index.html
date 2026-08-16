@@ -32,10 +32,13 @@ button {width: 80px;height: 80px;font-size: 28px;border-radius: 12px;border: 2px
 #sendChat{width: 100%;height: 45px;border: none;border-radius: 8px;background: #2ecc71;color: white;font-size: 18px;}
 #menuPanel {overflow-y: auto;-webkit-overflow-scrolling: touch;overscroll-behavior: contain;}
 #menuContent {width: 100%;min-height: 100%;height: auto;padding: 20px 10px;box-sizing: border-box;}
-#shopPanel,#settingsPanel,#accountSettingsPanel,#indexPanel,#indexMissionPanel {max-height: 100%;overflow-y: auto;-webkit-overflow-scrolling: touch;box-sizing: border-box;}
-body.menu-open {overflow: hidden;}
+#zoomButton{position: fixed;top: 135px;right: 15px;width: 50px;height: 50px;background: rgba(0,0,0,0.7);border-radius: 10px;display: flex;align-items: center;justify-content: center;font-size: 22px;color: white;z-index: 1000;}
+#zoomPanel{position: fixed;top: 195px;right: 15px;width: 200px;background: rgba(0,0,0,0.92);border-radius: 12px;padding: 10px;display: none;flex-direction: column;z-index: 1000;}
+#shopPanel,#settingsPanel,#accountSettingsPanel,#indexPanel,#indexMissionPanel {max-height: 100%;overflow-y: auto;-webkit-overflow-scrolling: touch;box-sizing: border-box;}body.menu-open {overflow: hidden;}
+#itemNamePopup{position:fixed;bottom:240px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:8px 16px;border-radius:12px;font:18px Arial;pointer-events:none;opacity:0;transition:opacity .2s;z-index:5000;}
 </style>    </head>    
 <div id="chatMessages"></div><body><canvas id="game"></canvas></body>
+<div id="itemNamePopup"></div>
 <div id="uiContainer">
 <div id="hotbar">
 <div class="slot selected" id="slot0"></div>
@@ -55,57 +58,30 @@ body.menu-open {overflow: hidden;}
 <button id="toggleHotbar"></button>
 <div id="menuButton"><div></div><div></div><div></div></div>
 <div id="chatButton">💬</div>
+<div id="zoomButton">🔍</div>
 <div id="chatPanel">
 <input type="text" id="chatInput" maxlength="60" placeholder="Write a message...">
 <button id="sendChat">Send</button>
 </div>
+<div id="zoomPanel">
+  <input id="zoomSlider" type="range" min="0.5" max="3" step="0.1" value="1.7">
+  <div style="color:white;text-align:center;font-size:14px;margin-top:6px;">
+    Zoom: <span id="zoomValue">1.7</span>
+  </div>
+</div>
 <div id="menuPanel">
 <div id="menuContent">
-<div id="mainMenu" style="display:flex;flex-direction:column;align-items:center;width:100%;">
-<h1>MENU</h1>
-<button id="shopBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">
-Shop
-</button>
-<button id="settingsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">
-Settings
-</button>
-<button id="accountSettingsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">
-Account Settings
-</button>
-<button id="indexBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;display:none;margin-left:auto;margin-right:auto;">
-Index
-</button>
-</div>
-<div id="shopPanel" style="display:none;padding:20px;color:white;text-align:left;">
-<h1 style="font-size:32px;">SHOP</h1>
-<div style="margin-top:25px;opacity:0.6;font-size:18px;">
-<div style="background:rgba(255,255,255,0.08);border:2px solid gold;border-radius:14px;padding:15px;margin-top:20px;">
-<div style="font-size:24px;color:#FFD700;font-weight:bold;">🔒 World Lock</div>
-<div style="margin-top:8px;font-size:17px;opacity:0.9;">Protect your world and become the owner.</div>
-<div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 250 Gems</div>
-<button id="buyWorldLockBtn" style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#f1c40f;color:black;border:none;border-radius:10px;">Buy</button>
-</div>
-<div style="background:rgba(255,255,255,0.08);border:2px solid #8e44ad;border-radius:14px;padding:15px;margin-top:20px;">
-<div style="font-size:24px;color:#d291ff;font-weight:bold;">🜏 Index</div>
-<div style="margin-top:8px;font-size:17px;opacity:0.9;">Do what it says...</div>
-<div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 100 Gems</div>
-<button id="buyIndexBtn" style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#8e44ad;color:white;border:none;border-radius:10px;">Buy</button>
-</div>
-</div>
-<button id="backFromShopBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button>
-</div>
+<div id="mainMenu" style="display:flex;flex-direction:column;align-items:center;width:100%;"><h1>MENU</h1><button id="shopBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Shop</button><button id="settingsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Settings</button><button id="accountSettingsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Account Settings</button><button id="indexBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;display:none;margin-left:auto;margin-right:auto;">Index</button><button id="achievementsBtn" style="width:80%;height:60px;font-size:22px;margin-top:20px;">Achievements</button></div>
+<div id="shopPanel" style="display:none;padding:20px;color:white;text-align:left;"><h1 style="font-size:32px;">SHOP</h1><div style="margin-top:25px;opacity:0.6;font-size:18px;"><div style="background:rgba(255,255,255,0.08);border:2px solid gold;border-radius:14px;padding:15px;margin-top:20px;"><div style="font-size:24px;color:#FFD700;font-weight:bold;">🔒 World Lock</div><div style="margin-top:8px;font-size:17px;opacity:0.9;">Protect your world and become the owner.</div><div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 250 Gems</div><button id="buyWorldLockBtn" style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#f1c40f;color:black;border:none;border-radius:10px;">Buy</button></div><div style="background:rgba(255,255,255,0.08);border:2px solid #00ffff;border-radius:14px;padding:15px;margin-top:20px;"><div style="font-size:24px;color:#00ffff;font-weight:bold;">🌀 Teleportation Orb</div><div style="margin-top:8px;font-size:17px;">Teleport anywhere you placed the orb.</div><div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 200 Gems</div><button id="buyTeleportOrbBtn"style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#00aaff;color:white;border:none;border-radius:10px;">Buy</button></div></div><div style="background:rgba(255,255,255,0.08);border:2px solid #8e44ad;border-radius:14px;padding:15px;margin-top:20px;"><div style="font-size:24px;color:#d291ff;font-weight:bold;">🜏 Index</div><div style="margin-top:8px;font-size:17px;opacity:0.9;">Do what it says...</div><div style="margin-top:10px;font-size:22px;color:#00e1ff;font-weight:bold;">💎 100 Gems</div><button id="buyIndexBtn" style="width:100%;height:50px;margin-top:15px;font-size:20px;background:#8e44ad;color:white;border:none;border-radius:10px;">Buy</button></div><button id="backFromShopBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button></div>
 <div id="settingsPanel" style="display:none;padding:20px;color:white;text-align:left;">
 <h1 style="font-size:32px;">Settings</h1>
 <div style="margin-top:20px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;">
-<div style="font-size:20px;">
-Shaders (only good PC/mobile!)
+<div style="font-size:20px;">Shaders (only good PC/mobile!)
 </div><label style="display:flex;align-items:center;margin-top:10px;font-size:18px;">
-<input type="checkbox" id="shadersToggle" style="margin-right:10px;">
-Enabled
+<input type="checkbox" id="shadersToggle" style="margin-right:10px;">Enabled
 </label>
 </div><button id="backFromSettingsBtn"
-style="width:100%;height:55px;margin-top:25px;font-size:22px;">
-Back
+style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back
 </button>
 </div>
 <div id="accountSettingsPanel" style="display:none;padding:20px;color:white;text-align:left;">
@@ -113,17 +89,30 @@ Back
 <div style="margin-top:20px;font-size:20px;">Player Name:</div>
 <input id="playerNameInput" type="text" maxlength="20" placeholder="Enter name..." style="width:100%;height:50px;margin-top:10px;border:none;border-radius:10px;padding:10px;font-size:20px;"><button id="backToMenuBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button><div style="margin-top:25px;opacity:0.6;font-size:18px;">More features coming later...</div></div>
 <div id="indexPanel" style="display:none;padding:20px;color:white;text-align:left;"><h1 style="font-size:32px;">INDEX</h1><div id="indexOption1" style="margin-top:20px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:22px;">???</div><div style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:22px;">???</div><div style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:22px;">???</div><div style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:22px;">???</div><div style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:22px;">???</div><button id="backFromIndexBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button></div>
+<div id="achievementsPanel" style="display:none;padding:20px;color:white;text-align:left;">
+    <h1 style="font-size:32px;text-align:center;">ACHIEVEMENTS</h1>
+
+    <div id="achievementsList" style="margin-top:20px;"></div>
+
+    <button id="backFromAchievementsBtn"
+        style="width:100%;height:55px;margin-top:25px;font-size:22px;">
+        Back
+    </button>
+</div>
 <div id="indexMissionPanel" style="display:none;padding:20px;color:white;text-align:left;"><h1 style="font-size:32px;">???</h1><div id="mission1"
-style="margin-top:20px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;">
-1. Buy World Lock and place it
+style="margin-top:20px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;">1. Buy World Lock and place it
 </div>
 <div id="mission2"
-style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">
-2. Enable "Little scary ;)" option in World Lock
+style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">2. Enable "Little scary ;)" option in World Lock
 </div>
 <div id="mission3"
-style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">
-3. Get Glitch Shard and Error Fragment
+style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">3. Get Glitch Shard and Error Fragment
+</div>
+<div id="mission4"
+style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">4. Do a ritual
+</div>
+<div id="mission5"
+style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-radius:12px;font-size:20px;opacity:0.5;display:none;">Get a Glitch Hammer
 </div><button id="backFromMissionBtn" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Back</button></div>
 </div>
 </div>
@@ -141,57 +130,15 @@ style="margin-top:15px;background:rgba(255,255,255,0.08);padding:15px;border-rad
 <option value="snowy">Snowy</option>
 <option value="rain">Rain</option>
 </select>
-<button id="littleScaryBtn" style="width:100%;height:55px;margin-top:20px;font-size:22px;background:#444;color:white;border:none;border-radius:12px;position:relative;z-index:99999;pointer-events:auto;">
-Little Scary ;)
+<button id="littleScaryBtn" style="width:100%;height:55px;margin-top:20px;font-size:22px;background:#444;color:white;border:none;border-radius:12px;position:relative;z-index:99999;pointer-events:auto;">Little Scary ;)
 </button>
 <button id="closeWorldLockPanel" style="width:100%;height:55px;margin-top:25px;font-size:22px;">Close</button>
-</div>
-</div>
-<script>    
-let map = [];
-let width = 100;
-let height = 100;
-let spawnY = 0;
-let isBreakingHeld = false;
-let gems = 0;
-let waterTime = 0;
-let playerChat = "";
-let playerChatTime = 0;
-let maxHealth = 100;
-let unlockedAchievements = {firstChat:false,firstDeath:false,firstWorldLock:false};
-let hasIndex = false;
-let indexProgress = {step1:false,step2:false,step3:false};
-let shadersEnabled = false;
-let scaryMode = false;
-let glitchOffset = 0;
-let blindnessActive = false;
-let shadowRunner = null;
-let screenShake = 0;
-let lastShadowHit = 0;
-let shadowDamager = null;
-let lastShadowDamagerHit = 0;
-let truthScreen = false;
-let truthScreenStart = 0;
-let truthMessage = "";
-let shadowRunnerKilled = false;
-let shadowDamagerKilled = false;
-const blindnessRadius = 3;
-let worldOwner = null;
-function setMenu(open){
-    inMenu = open;
-    document.body.classList.toggle("menu-open", open);
-}
-let worldLockState = "normal"; 
-let worldLockPos = null;
-let worldPublic = false;
-let worldBackground = "day";
-let worldLockMenuOpen = false;
-let inMenu = false;
-let currentBreakTarget = { x: 0, y: 0 };
-let hotbar = {selected: 0,block: null};
-let inventory = {soil: 0,granite: 0,cave_bg: 0,grass: 0,wood: 0,obsidian: 0,marble: 0,water: 0,sand: 0,sandstone: 0,gem_soil: 0,black_brick: 0,concrete_block_1x1: 0,glass: 0,magic_stuff: 0,metal_plate: 0,red_brick: 0,soil_seed: 0,granite_seed: 0,cave_bg_seed: 0,grass_seed: 0,wood_seed: 0,obsidian_seed: 0,marble_seed: 0,water_seed: 0,sand_seed: 0,sandstone_seed: 0,gem_soil_seed: 0,black_brick_seed: 0,concrete_block_1x1_seed: 0,glass_seed: 0,magic_stuff_seed: 0,metal_plate_seed: 0,red_brick_seed: 0,world_lock: 0,glitch_shard: 0,error_fragment: 0,};
-let inventoryFullMessageTime = 0;
-let trees = [];
+</div></div><script>    
+let map = [];let width = 100;let height = 100;let spawnY = 0;let isBreakingHeld = false;let gems = 1000;let waterTime = 0;let playerChat = "";let playerChatTime = 0;let maxHealth = 100;let hasIndex = false;let unlockedAchievements = {firstChat: false,firstDeath: false,firstWorldLock: false,painfulTruth: false,mountainClaws: false};let indexProgress = {step1:false,step2:false,step3:false,step4:false,step5:false};let shadersEnabled = false;let scaryMode = false;let glitchOffset = 0;let blindnessActive = false;let shadowRunner = null;let screenShake = 0;let lastShadowHit = 0;let shadowDamager = null;let lastShadowDamagerHit = 0;let truthScreen = false;let truthScreenStart = 0;let truthMessage = "";let shadowRunnerKilled = false;let shadowDamagerKilled = false;const blindnessRadius = 3;let worldOwner = null;let ritualFragments = [];let backroomsActive = false;let backroomsSavedPlayer = null;let backroomsWorld = null;let backroomsWidth = 51;let backroomsHeight = 51;let backroomsExit = null;let backroomsJumpscareCount = 0;
+function setMenu(open){inMenu = open;document.body.classList.toggle("menu-open", open);}
+let worldLockState = "normal"; let worldLockPos = null;let worldPublic = false;let worldBackground = "day";let worldLockMenuOpen = false;let inMenu = false;let currentBreakTarget = { x: 0, y: 0 };let hotbar = {selected: 0,block: null};let teleportOrbPos = null;let teleportCooldown = 0;let teleportPending = false;
+let inventory = {soil: 0,granite: 0,cave_bg: 0,grass: 0,wood: 0,obsidian: 0,marble: 0,water: 0,sand: 0,sandstone: 0,gem_soil: 0,black_brick: 0,concrete_block_1x1: 0,glass: 0,magic_stuff: 0,metal_plate: 0,red_brick: 0,soil_seed: 0,granite_seed: 0,cave_bg_seed: 0,grass_seed: 0,wood_seed: 0,obsidian_seed: 0,marble_seed: 0,water_seed: 0,sand_seed: 0,sandstone_seed: 0,gem_soil_seed: 0,black_brick_seed: 0,concrete_block_1x1_seed: 0,glass_seed: 0,magic_stuff_seed: 0,metal_plate_seed: 0,red_brick_seed: 0,world_lock: 0,glitch_shard: 0,error_fragment: 0,teleportation_orb: 0,};
+let inventoryFullMessageTime = 0;let trees = [];
 const blockTextures = {};
 const MAX_STACK = 500;
 const menuButton = document.getElementById("menuButton");
@@ -201,12 +148,19 @@ const chatPanel = document.getElementById("chatPanel");
 const chatInput = document.getElementById("chatInput");
 const sendChat = document.getElementById("sendChat");
 const chatMessages = document.getElementById("chatMessages");
+const zoomButton = document.getElementById("zoomButton");
+const zoomPanel = document.getElementById("zoomPanel");
+const zoomSlider = document.getElementById("zoomSlider");
+const zoomValue = document.getElementById("zoomValue");
+const buyTeleportOrbBtn =document.getElementById("buyTeleportOrbBtn");
+const itemNamePopup = document.getElementById("itemNamePopup");
+let itemNameTimeout = null;
+function showItemName(name){itemNamePopup.textContent = name;itemNamePopup.style.opacity = "1";clearTimeout(itemNameTimeout);itemNameTimeout = setTimeout(()=>{itemNamePopup.style.opacity = "0";},1500);}
 let playerName =localStorage.getItem("playerName") || "";
-const settingsBtn =
-document.getElementById("settingsBtn");const settingsPanel =
-document.getElementById("settingsPanel");const backFromSettingsBtn =
-document.getElementById("backFromSettingsBtn");const shadersToggle =
-document.getElementById("shadersToggle");
+zoomButton.onclick = () => {zoomPanel.style.display = zoomPanel.style.display === "flex" ? "none" : "flex";};
+zoomSlider.oninput = () => {zoom = parseFloat(zoomSlider.value);zoomValue.innerText = zoom.toFixed(1);};
+zoomPanel.style.display = "none";
+const settingsBtn =document.getElementById("settingsBtn");const settingsPanel =document.getElementById("settingsPanel");const backFromSettingsBtn =document.getElementById("backFromSettingsBtn");const shadersToggle =document.getElementById("shadersToggle");
 const accountSettingsBtn =document.getElementById("accountSettingsBtn");
 const shopBtn =document.getElementById("shopBtn");
 const accountSettingsPanel =document.getElementById("accountSettingsPanel");
@@ -214,6 +168,14 @@ const shopPanel =document.getElementById("shopPanel");
 const mainMenu =document.getElementById("mainMenu");
 const indexBtn =
 document.getElementById("indexBtn");
+const achievementsBtn =
+document.getElementById("achievementsBtn");
+const achievementsPanel =
+document.getElementById("achievementsPanel");
+const achievementsList =
+document.getElementById("achievementsList");
+const backFromAchievementsBtn =
+document.getElementById("backFromAchievementsBtn");
 const backToMenuBtn =document.getElementById("backToMenuBtn");
 const backFromShopBtn =document.getElementById("backFromShopBtn");
 const indexPanel =
@@ -247,11 +209,41 @@ const closeWorldLockPanel =
 document.getElementById("closeWorldLockPanel");
 const littleScaryBtn =
 document.getElementById("littleScaryBtn");
+function updateAchievementsUI(){
+    const achievements=[
+        {id:"firstChat",name:"Don't ask, no one listens",description:"Wyślij swoją pierwszą wiadomość na czacie.",icon:"💬"},
+        {id:"firstDeath",name:"The first and not the last death",description:"Zgiń po raz pierwszy.",icon:"💀"},
+        {id:"firstWorldLock",name:"Owner",description:"Kup i postaw World Lock.",icon:"🔒"},
+        {id:"painfulTruth",name:"Painful Truth",description:"Odkryj bolesną prawdę.",icon:"👁️"},
+        {id:"mountainClaws",name:"Mountain Claws",description:"Spadnij z samej góry mapy aż na dół.",icon:"🏔️"}
+    ];
+    achievementsList.innerHTML="";
+    achievements.forEach(a=>{
+        const unlocked=!!unlockedAchievements[a.id],box=document.createElement("div");
+        box.style.marginTop="15px";
+        box.style.padding="15px";
+        box.style.borderRadius="12px";
+        box.style.background=unlocked?"rgba(46,204,113,0.15)":"rgba(255,255,255,0.06)";
+        box.style.border=unlocked?"2px solid #2ecc71":"2px solid rgba(255,255,255,0.15)";
+        box.innerHTML=`<div style="font-size:22px;font-weight:bold;color:${unlocked?"#4dff88":"#aaa"}">${unlocked?"✔":"🔒"} ${a.icon} ${a.name}</div><div style="margin-top:8px;font-size:16px;color:${unlocked?"white":"#999"}">${a.description}</div><div style="margin-top:8px;font-size:14px;color:${unlocked?"#4dff88":"#777"}">${unlocked?"Unlocked":"Locked"}</div>`;
+        achievementsList.appendChild(box);
+    });
+}
+achievementsBtn.onclick=()=>{
+    mainMenu.style.display="none";
+    achievementsPanel.style.display="block";
+    updateAchievementsUI();
+};
+backFromAchievementsBtn.onclick=()=>{
+    achievementsPanel.style.display="none";
+    mainMenu.style.display="flex";
+};
 accountSettingsBtn.addEventListener("touchstart",(e) => {e.preventDefault();mainMenu.style.display = "none";accountSettingsPanel.style.display = "block";},{ passive:false });
 backToMenuBtn.addEventListener("touchstart",(e) => {e.preventDefault();accountSettingsPanel.style.display = "none";mainMenu.style.display = "block";},{ passive:false });
 playerNameInput.value = playerName;
 shopBtn.addEventListener("touchstart",(e) => {e.preventDefault();mainMenu.style.display = "none";shopPanel.style.display = "block";},{ passive:false });
 backFromShopBtn.addEventListener("touchstart",(e) => {e.preventDefault();shopPanel.style.display = "none";mainMenu.style.display = "block";},{ passive:false });
+buyTeleportOrbBtn.onclick = () => {if(gems < 200){addChatMessage("[SHOP] Not enough gems!");return;}gems -= 200;inventory.teleportation_orb++;updateInventoryUI();updateHotbar();updateGemsUI();addChatMessage("[SHOP] You bought Teleportation Orb!");};
 settingsBtn.addEventListener("touchstart",(e)=>{
 e.preventDefault();
 mainMenu.style.display="none";
@@ -323,7 +315,7 @@ if(!blockTextures.world_lock_glitch)blockTextures.world_lock_glitch=generateBloc
 document.body.style.background="black";
 worldLockPanel.style.display="none";
 worldLockMenuOpen=0;
-addChatMessage("[INDEX] Step 2 completed...");
+addChatMessage("[INDEX] Unlocked new task...");
 mission3.style.display="block";
 mission3.style.opacity="1";
 mission3.innerHTML="3. Get Glitch Shard and Error Fragment";
@@ -385,7 +377,12 @@ div.className="chatMessage";
 div.style.color=
 type==="world"?"#ff4d4d":
 type==="achievement"?"#4dff88":
+type==="ritual"?"black":
 "white";
+if(type==="ritual"){
+div.style.webkitTextStroke="1px white";
+div.style.fontWeight="bold";
+}
 div.innerText=message;
 chatMessages.appendChild(div);
 chatQueue.push(div);
@@ -474,9 +471,16 @@ else if(type === "metal_plate"){px(0,0,8,8,"#6e737a");px(0,0,8,1,"#8a9098");px(0
 else if(type === "red_brick"){px(0,0,8,8,"#8c2f2f");px(0,0,4,3,"#a33a3a");px(4,0,4,3,"#7a2727");px(0,3,8,1,"#3b1f1f");px(0,4,3,3,"#7a2727");px(3,4,5,3,"#a33a3a");px(0,2,4,1,"#912f2f");px(4,2,4,1,"#6f2424");px(0,6,3,1,"#6f2424");px(3,6,5,1,"#912f2f");px(4,0,1,3,"#3b1f1f");px(3,4,1,3,"#3b1f1f");}
 else if(type === "world_lock"){px(0,0,8,8,"#f1c40f");px(1,1,6,6,"#d4ac0d");px(2,2,4,4,"#f7dc6f");px(3,3,2,2,"#fff4b3");px(3,1,2,1,"#000");px(2,2,4,1,"#000");px(2,3,1,2,"#000");px(5,3,1,2,"#000");px(3,5,2,1,"#000");}
 else if(type === "world_lock_glitch"){px(0,0,8,8,"#050505");px(1,1,6,6,"#111111");px(2,2,4,4,"#1a1a1a");px(1,2,1,1,"#ff00ff");px(6,3,1,1,"#00ffff");px(4,5,1,1,"#ff0000");px(3,1,2,1,"#000");px(2,2,4,1,"#000");px(2,3,1,2,"#000");px(5,3,1,2,"#000");px(3,5,2,1,"#000");}
-else if(type === "glitch_shard"){px(0,0,8,8,"#050505");px(1,1,6,6,"#111");px(2,2,4,4,"#000");px(2,3,1,1,"#00aaff");px(5,4,1,1,"#ff0033");px(3,5,2,1,"#222");}
-else if(type === "error_fragment"){px(0,0,8,8,"#0a3d0a");px(1,1,6,6,"#146b14");px(2,2,4,4,"#00ff66");px(3,3,2,2,"#003300");}
-else if(type.endsWith("_seed")){const base = type.replace("_seed", "");const p2 = blockSize / 8;
+else if(type === "glitch_shard"){px(3,0,2,1,"#00ffff");px(2,1,4,1,"#00aaff");px(1,2,6,1,"#111");px(1,3,2,1,"#ff0044");px(3,3,2,1,"#000");px(5,3,2,1,"#00ffff");px(2,4,4,1,"#050505");px(2,5,1,1,"#ff0044");px(3,5,2,1,"#111");px(5,5,1,1,"#00ffff");px(3,6,2,1,"#222");px(3,7,2,1,"#000");}
+else if(type === "error_fragment"){px(2,0,4,1,"#00ff66");px(1,1,6,1,"#22ff88");px(1,2,1,3,"#22ff88");px(6,2,1,3,"#22ff88");px(2,2,4,4,"#146b14");px(3,3,2,2,"#00ff66");px(2,6,4,1,"#22ff88");px(3,7,2,1,"#00ff66");}
+else if(type === "glitch_pedestal"){px(2,0,4,1,"#ff00ff");px(1,1,6,1,"#8800aa");px(2,2,1,1,"#00ffff");px(5,2,1,1,"#ff0033");px(1,2,6,2,"#222");px(0,4,8,1,"#111");px(1,5,6,1,"#333");px(1,6,6,1,"#000");px(0,7,8,1,"#111");}
+else if(type === "teleportation_orb"){px(3,0,2,1,"#66ffff");px(2,1,4,1,"#00ffff");px(1,2,6,4,"#00aaff");px(2,3,4,2,"#88ffff");px(3,4,2,1,"#ffffff");px(2,6,4,1,"#00ffff");px(3,7,2,1,"#0066ff");}
+else if(type === "backrooms_exit"){
+    px(1,1,6,6,"#000000");
+    px(2,2,4,4,"#050505");
+    px(3,3,2,2,"#111111");
+}
+else if(type && type.endsWith("_seed")){const base = type.replace("_seed", "");const p2 = blockSize / 8;
     function spx(x,y,w,h,color){ctx.fillStyle = color;ctx.fillRect(x*p2, y*p2, w*p2, h*p2);}ctx.clearRect(0,0,blockSize,blockSize);spx(1,1,6,6,"#111");
 if(base === "soil"){spx(3,1,2,1,"#6b4423");spx(2,2,4,3,"#8B5A2B");spx(3,5,2,1,"#3CBA54");}
 else if(base === "granite"){spx(2,1,4,1,"#999");spx(1,2,6,3,"#777");spx(2,5,4,1,"#bbb");}
@@ -500,7 +504,7 @@ else if(base === "red_brick"){spx(2,1,4,1,"#ff9a9a");spx(1,2,6,4,"#8c2f2f");}
 else{spx(3,1,2,1,"#ffffff");spx(2,2,4,3,"#777");}
     ctx.strokeStyle = "#FFD700";ctx.lineWidth = 2;ctx.strokeRect(1,1,blockSize-2,blockSize-2);}
     return c;}
-const canvas = document.getElementById("game");  
+    const canvas = document.getElementById("game");  
 const left = document.getElementById("left");
 const right = document.getElementById("right");
 const jump = document.getElementById("jump");
@@ -558,7 +562,10 @@ canvas.addEventListener("touchcancel",()=>{
 if(inMenu)return;
 isBreakingHeld=0;
 });
-const blockSize=32,zoom=1.7,worldWidth=101,worldHeight=101;
+const blockSize = 32;
+let zoom = 1.7;
+const worldWidth = 101;
+const worldHeight = 101;
 const gravity=0.5,friction=0.8,accel=0.6,maxSpeed=4;
 const worldPixelWidth=worldWidth*blockSize;
 const worldPixelHeight=worldHeight*blockSize;
@@ -580,8 +587,9 @@ for(let i=0;i<5;i++){crackImages.push(generateCrack(i));}
 let camera = { x:0, y:0 };
 let world=[];    
 let background = [];
-const BLOCK_IDS = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19,world_lock: 20};
-const BLOCKS = {0: { name: "air", hits: 0, solid: false },1: { name: "soil", hits: 2, solid: true },2: { name: "granite", hits: 4, solid: true },3: { name: "cave_bg", hits: 2, solid: false },4: { name: "grass", hits: 2, solid: false },5: { name: "lava", hits: 2, solid: false, bounce: 3, texture: "#ff4500" },6: { name: "wood", hits: 3, solid: true },7: { name: "obsidian", hits: 6, solid: true },8: { name: "bedrock", hits: Infinity, solid: true },9: { name: "marble", hits: 4, solid: true },10: {name: "sand", hits: 2, solid: true},11: {name: "sandstone", hits: 4, solid: true},12: {name: "water", hits: 3, solid: false},13: { name: "gem_soil", hits: 3, solid: true },14: { name: "black_brick", hits: 5, solid: true },15: { name: "concrete_block_1x1", hits: 5, solid: true },16: { name: "glass", hits: 3, solid: true },17: { name: "magic_stuff", hits: 5, solid: true },18: { name: "metal_plate", hits: 6, solid: true },19: { name: "red_brick", hits: 4, solid: true },20: {name: "world_lock",hits: 10,solid: true},};
+const ITEM_DISPLAY_NAMES = {soil:"Soil Block",granite:"Granite Block",cave_bg:"Cave Background",grass:"Grass",wood:"Wood Block",obsidian:"Obsidian Block",marble:"Marble Block",water:"Water Block",sand:"Sand",sandstone:"Sandstone",gem_soil:"Gem Soil",black_brick:"Black Brick",concrete_block_1x1:"Concrete Block",glass:"Glass Block",magic_stuff:"Magic Stuff",metal_plate:"Metal Plate",red_brick:"Red Brick",world_lock:"World Lock",teleportation_orb:"Teleportation Orb",glitch_shard:"Glitch Shard",error_fragment:"Error Fragment",soil_seed:"Soil Seed",granite_seed:"Granite Seed",cave_bg_seed:"Cave BG Seed",grass_seed:"Grass Seed",wood_seed:"Wood Seed",obsidian_seed:"Obsidian Seed",marble_seed:"Marble Seed",water_seed:"Water Seed",sand_seed:"Sand Seed",sandstone_seed:"Sandstone Seed",gem_soil_seed:"Gem Soil Seed",black_brick_seed:"Black Brick Seed",concrete_block_1x1_seed:"Concrete Seed",glass_seed:"Glass Seed",magic_stuff_seed:"Magic Stuff Seed",metal_plate_seed:"Metal Plate Seed",red_brick_seed:"Red Brick Seed"};
+const BLOCK_IDS = {soil: 1,granite: 2,grass: 4,lava: 5,wood: 6,obsidian: 7,marble: 9,sand: 10,sandstone: 11,water: 12,gem_soil: 13,black_brick: 14,concrete_block_1x1: 15,glass: 16,magic_stuff: 17,metal_plate: 18,red_brick: 19,world_lock: 20,glitch_pedestal: 21, teleportation_orb: 22};
+const BLOCKS = {0: { name: "air", hits: 0, solid: false },1: { name: "soil", hits: 2, solid: true },2: { name: "granite", hits: 4, solid: true },3: { name: "cave_bg", hits: 2, solid: false },4: { name: "grass", hits: 2, solid: false },5: { name: "lava", hits: 2, solid: false, bounce: 3, texture: "#ff4500" },6: { name: "wood", hits: 3, solid: true },7: { name: "obsidian", hits: 6, solid: true },8: { name: "bedrock", hits: Infinity, solid: true },9: { name: "marble", hits: 4, solid: true },10: {name: "sand", hits: 2, solid: true},11: {name: "sandstone", hits: 4, solid: true},12: {name: "water", hits: 3, solid: false},13: { name: "gem_soil", hits: 3, solid: true },14: { name: "black_brick", hits: 5, solid: true },15: { name: "concrete_block_1x1", hits: 5, solid: true },16: { name: "glass", hits: 3, solid: true },17: { name: "magic_stuff", hits: 5, solid: true },18: { name: "metal_plate", hits: 6, solid: true },19: { name: "red_brick", hits: 4, solid: true },20: {name: "world_lock",hits: 10,solid: true},21: {name: "glitch_pedestal",hits: 999,solid: false},22: {name: "teleportation_orb",hits: 1,solid: false},};
 function forceBedrock(x) {world[worldHeight - 1][x] = 8;world[worldHeight - 2][x] = 8;}
 function generateTerrain(){
 world=[];background=[];
@@ -676,33 +684,182 @@ let playerHealth=MAX_HEALTH,playerAir=MAX_AIR,lastAirTick=Date.now(),lastDrownDa
 let keys={left:false,right:false,up:false};
 document.body.addEventListener("touchstart",e=>{if(e.target.tagName==="BUTTON"&&!e.target.closest("#menuPanel")&&!e.target.closest("#chatPanel"))e.preventDefault()},{passive:false});
 function isSolid(x,y){if(x<0||y<0||x>=worldWidth||y>=worldHeight)return false;return BLOCKS[world[y][x]]?.solid||false;}
-function collide(dt){player.onGround=false;player.x+=player.velX*dt;let l=Math.floor(player.x/blockSize),r=Math.floor((player.x+player.width-.001)/blockSize),t=Math.floor(player.y/blockSize),b=Math.floor((player.y+player.height-.001)/blockSize);if(player.velX>0&&(isSolid(r,t)||isSolid(r,b))){player.x=r*blockSize-player.width-.001;player.velX=0}if(player.velX<0&&(isSolid(l,t)||isSolid(l,b))){player.x=(l+1)*blockSize+.001;player.velX=0}player.y+=player.velY*dt;l=Math.floor(player.x/blockSize);r=Math.floor((player.x+player.width-.001)/blockSize);t=Math.floor(player.y/blockSize);b=Math.floor((player.y+player.height-.001)/blockSize);if(player.velY>0&&(isSolid(l,b)||isSolid(r,b))){player.y=b*blockSize-player.height;player.velY=0;player.onGround=true}if(player.velY<0&&(isSolid(l,t)||isSolid(r,t))){player.y=(t+1)*blockSize;player.velY=0}if(player.x<0)player.x=0;if(player.x+player.width>worldPixelWidth)player.x=worldPixelWidth-player.width;if(player.y+player.height>worldPixelHeight){player.y=worldPixelHeight-player.height;player.velY=0;player.onGround=true}}
-function isInWater(){let l=Math.floor(player.x/blockSize),r=Math.floor((player.x+player.width)/blockSize),t=Math.floor(player.y/blockSize),b=Math.floor((player.y+player.height)/blockSize);for(let y=t;y<=b;y++)for(let x=l;x<=r;x++)if(world[y]?.[x]===12)return true;return false;}
+function isSolidForPlayer(x,y){
+    if(backroomsActive){
+        if(!backroomsWorld?.[y])return false;
+        const block=backroomsWorld[y][x];
+        return block!==undefined&&block!==0&&block!==null;
+    }
+    return isSolid(x,y);
+}
+function collide(dt){
+    player.onGround=false;
+    const mapHeight=backroomsActive?backroomsWorld?.length||0:worldHeight;
+    const mapWidth=backroomsActive?backroomsWorld?.[0]?.length||0:worldWidth;
+    if(!mapWidth||!mapHeight)return;
+    player.x+=player.velX*dt;
+    let l=Math.floor(player.x/blockSize);
+    let r=Math.floor((player.x+player.width-.001)/blockSize);
+    let t=Math.floor(player.y/blockSize);
+    let b=Math.floor((player.y+player.height-.001)/blockSize);
+    if(player.velX>0&&(isSolidForPlayer(r,t)||isSolidForPlayer(r,b))){
+        player.x=r*blockSize-player.width-.001;
+        player.velX=0;
+    }
+    if(player.velX<0&&(isSolidForPlayer(l,t)||isSolidForPlayer(l,b))){
+        player.x=(l+1)*blockSize+.001;
+        player.velX=0;
+    }
+    player.y+=player.velY*dt;
+    l=Math.floor(player.x/blockSize);
+    r=Math.floor((player.x+player.width-.001)/blockSize);
+    t=Math.floor(player.y/blockSize);
+    b=Math.floor((player.y+player.height-.001)/blockSize);
+    if(player.velY>0&&(isSolidForPlayer(l,b)||isSolidForPlayer(r,b))){
+        player.y=b*blockSize-player.height;
+        player.velY=0;
+        player.onGround=true;
+    }
+    if(player.velY<0&&(isSolidForPlayer(l,t)||isSolidForPlayer(r,t))){
+        player.y=(t+1)*blockSize;
+        player.velY=0;
+    }
+    const worldPixelWidth=mapWidth*blockSize;
+    const worldPixelHeight=mapHeight*blockSize;
+    if(player.x<0){
+        player.x=0;
+        player.velX=0;
+    }
+    if(player.x+player.width>worldPixelWidth){
+        player.x=worldPixelWidth-player.width;
+        player.velX=0;
+    }
+    if(player.y+player.height>worldPixelHeight){
+        player.y=worldPixelHeight-player.height;
+        player.velY=0;
+        player.onGround=true;
+    }
+    if(player.y<0){
+        player.y=0;
+        if(player.velY<0)player.velY=0;
+    }
+    }
+    function isInWater(){let l=Math.floor(player.x/blockSize),r=Math.floor((player.x+player.width)/blockSize),t=Math.floor(player.y/blockSize),b=Math.floor((player.y+player.height)/blockSize);for(let y=t;y<=b;y++)for(let x=l;x<=r;x++)if(world[y]?.[x]===12)return true;return false;}
 function isFullyUnderwater(){let l=Math.floor(player.x/blockSize),r=Math.floor((player.x+player.width-.001)/blockSize),t=Math.floor(player.y/blockSize),b=Math.floor((player.y+player.height-.001)/blockSize);for(let y=t;y<=b;y++)for(let x=l;x<=r;x++)if(world[y]?.[x]!==12)return false;return true;}
 function checkLavaCollision(){let px=player.x+player.width/2,py=player.y+player.height/2,l=Math.floor(player.x/blockSize),r=Math.floor((player.x+player.width-.001)/blockSize),t=Math.floor(player.y/blockSize),b=Math.floor((player.y+player.height-.001)/blockSize),touched=false;for(let y=t;y<=b;y++)for(let x=l;x<=r;x++)if(world[y]?.[x]===5){let lx=x*blockSize+blockSize/2,ly=y*blockSize+blockSize/2,dx=px-lx,dy=py-ly;touched=true;if(Math.abs(dx)>Math.abs(dy)){let dir=dx>0?1:-1;player.velX=dir*6;player.velY=-2;player.x+=dir*blockSize*.6}else{let dir=dy>0?1:-1;player.velY=dir*6;player.velX*=.5;player.y+=dir*blockSize*.6}player.onGround=false;damagePlayer(20)}if(touched&&playerHealth<=0){const name=playerName?.trim()?playerName:"Unnamed";if(!unlockedAchievements.firstDeath){unlockedAchievements.firstDeath=true;gems+=50;updateGemsUI();addChatMessage(`${name} unlocked the achievement [the first and not the last death]`,"achievement")}respawnPlayer()}}
 function updateAirSystem(){const now=Date.now();if(isFullyUnderwater()){if(playerAir>0){if(now-lastAirTick>=1e3){playerAir=Math.max(0,playerAir-10);lastAirTick=now}}else if(now-lastDrownDamage>=1e3){damagePlayer(15);lastDrownDamage=now;if(playerHealth<=0){const name=playerName?.trim()?playerName:"Unnamed";if(!unlockedAchievements.firstDeath){unlockedAchievements.firstDeath=true;gems+=50;updateGemsUI();addChatMessage(`${name} unlocked the achievement [the first and not the last death]`,"achievement")}respawnPlayer()}}}else playerAir=Math.min(MAX_AIR,playerAir+.8);}
+function backroomsJumpToCeiling(dt){
+    if(!backroomsActive||!player.backroomsCeilingJump)return false;
+    const left=Math.floor(player.x/blockSize),right=Math.floor((player.x+player.width-.001)/blockSize),top=Math.floor(player.y/blockSize);
+    let ceilingY=-1;
+    for(let y=top-1;y>=0;y--){
+        for(let x=left;x<=right;x++){
+            if(isSolidForPlayer(x,y)){ceilingY=y;break;}
+        }
+        if(ceilingY!==-1)break;
+    }
+    if(ceilingY===-1){
+        player.backroomsCeilingJump=false;
+        return false;
+    }
+    const targetY=ceilingY*blockSize-player.height,jumpSpeed=35*dt;
+    if(player.y-jumpSpeed>targetY){
+        player.y-=jumpSpeed;
+        player.velY=0;
+        player.onGround=false;
+        return true;
+    }
+    player.y=targetY;
+    player.velY=0;
+    player.onGround=false;
+    player.backroomsCeilingJump=false;
+    return true;
+}
+function isSolidBackrooms(x,y){
+    if(!backroomsWorld?.[y])return false;
+    const block=backroomsWorld[y][x];
+    return !!block&&block!==0;
+}
+function getBackroomsCeilingY(){
+    if(!backroomsActive)return null;
+    const px1=Math.floor(player.x/blockSize),px2=Math.floor((player.x+player.width-1)/blockSize),startY=Math.floor(player.y/blockSize)-1;
+    for(let y=startY;y>=0;y--){
+        for(let x=px1;x<=px2;x++){
+            if(backroomsWorld?.[y]?.[x]&&isSolidBackrooms(x,y))return y*blockSize;
+        }
+    }
+    return null;
+}
+function forceBackroomsCeilingJump(){
+    if(!backroomsActive||!backroomsWorld?.length)return false;
+    const left=Math.floor(player.x/blockSize),right=Math.floor((player.x+player.width-1)/blockSize),currentY=Math.floor(player.y/blockSize);
+    let ceilingBlockY=-1;
+    for(let y=currentY-1;y>=0;y--){
+        for(let x=left;x<=right;x++){
+            if(backroomsWorld[y]?.[x]!==undefined&&backroomsWorld[y][x]!==0&&backroomsWorld[y][x]!==null){
+                ceilingBlockY=y;
+                break;
+            }
+        }
+        if(ceilingBlockY!==-1)break;
+    }
+    if(ceilingBlockY===-1)return false;
+    player.y=(ceilingBlockY+1)*blockSize-player.height;
+    player.velY=0;
+    player.onGround=false;
+    return true;
+}
 function updateMovement(deltaTime){
-if(keys.left)player.velX-=accel*deltaTime;
-if(keys.right)player.velX+=accel*deltaTime;
-player.velX=Math.max(-maxSpeed,Math.min(maxSpeed,player.velX));
-if(!keys.left&&!keys.right){
-player.velX*=Math.pow(friction,deltaTime);
-if(Math.abs(player.velX)<.05)player.velX=0;
-}
-if(keys.up&&player.onGround&&!jumpLock){
-player.velY=-8.58;
-player.onGround=false;
-jumpLock=true;
-}
-if(!keys.up)jumpLock=false;
-if(isInWater()){
-player.velY+=gravity*.2*deltaTime;
-player.velY*=Math.pow(.9,deltaTime);
-if(keys.up)player.velY=-3;
-player.velY=Math.min(player.velY,3);
-}else player.velY+=gravity*deltaTime;
-if(player.velY>12)player.velY=12;
-collide(deltaTime);
+    if(keys.left)player.velX-=accel*deltaTime;
+    if(keys.right)player.velX+=accel*deltaTime;
+    player.velX=Math.max(-maxSpeed,Math.min(maxSpeed,player.velX));
+    if(!keys.left&&!keys.right){
+        player.velX*=Math.pow(friction,deltaTime);
+        if(Math.abs(player.velX)<.05)player.velX=0;
+    }
+    if(backroomsActive){
+        if(keys.up&&player.onGround&&!jumpLock){
+            const left=Math.floor(player.x/blockSize),right=Math.floor((player.x+player.width-.001)/blockSize),top=Math.floor(player.y/blockSize);
+            let ceiling=-1;
+            for(let y=top-1;y>=0;y--){
+                for(let x=left;x<=right;x++){
+                    if(backroomsWorld?.[y]?.[x]!==undefined&&backroomsWorld[y][x]!==0){
+                        ceiling=y;
+                        break;
+                    }
+                }
+                if(ceiling>=0)break;
+            }
+            if(ceiling>=0){
+                const targetY=ceiling*blockSize-player.height,distance=player.y-targetY;
+                player.velY=distance>0?-Math.sqrt(2*gravity*distance)-2:-2;
+            }else player.velY=-8.58;
+            player.onGround=false;
+            jumpLock=true;
+        }
+        if(!keys.up)jumpLock=false;
+    }else{
+        if(keys.up&&player.onGround&&!jumpLock){
+            player.velY=-8.58;
+            player.onGround=false;
+            jumpLock=true;
+        }
+        if(!keys.up)jumpLock=false;
+    }
+    if(isInWater()){
+        player.velY+=gravity*.2*deltaTime;
+        player.velY*=Math.pow(.9,deltaTime);
+        if(keys.up)player.velY=-3;
+        player.velY=Math.min(player.velY,3);
+    }else player.velY+=gravity*deltaTime;
+    if(player.velY>12)player.velY=12;
+    if(teleportPending){
+        player.velX=player.velY=0;
+        player.onGround=false;
+        teleportPending=false;
+        return;
+    }
+    collide(deltaTime);
 }
 function updateCamera(){
 camera.x=Math.max(0,Math.min(player.x-canvas.width/(2*zoom),worldPixelWidth-canvas.width/zoom));
@@ -881,17 +1038,12 @@ for(let yy = y - 1; yy >= 0; yy--){
     if(id === "grass" || id === "soil") continue;
     light -= 0.04;}
 return Math.max(0.25, light);}
-function drawBlock(x,y){
+    function drawBlock(x,y){
 const b=world[y][x];
 const dx=(x*blockSize-camera.x)*zoom,
 dy=(y*blockSize-camera.y)*zoom,
 s=blockSize*zoom;
-let k={
-1:"soil",2:"granite",3:"cave_bg",4:"grass",5:"lava",6:"wood",
-7:"obsidian",8:"bedrock",9:"marble",10:"sand",11:"sandstone",
-12:"water",13:"gem_soil",14:"black_brick",15:"concrete_block_1x1",
-16:"glass",17:"magic_stuff",18:"metal_plate",19:"red_brick",
-20:worldLockState==="glitch"?"world_lock_glitch":"world_lock"}[b];
+let k={1:"soil",2:"granite",3:"cave_bg",4:"grass",5:"lava",6:"wood",7:"obsidian",8:"bedrock",9:"marble",10:"sand",11:"sandstone",12:"water",13:"gem_soil",14:"black_brick",15:"concrete_block_1x1",16:"glass",17:"magic_stuff",18:"metal_plate",19:"red_brick",20:worldLockState==="glitch"?"world_lock_glitch":"world_lock",21:"glitch_pedestal",22:"teleportation_orb"}[b];
 const a=world[y-1]?.[x];
 if(b===1)k=[0,3,4].includes(a)?"soil_grass":"soil_base";
 ctx.save();
@@ -1054,7 +1206,23 @@ if(playerHealth <= 40){
 lastShadowDamagerHit=Date.now();
 screenShake=40;
 }}}
-function drawShadowDamager(){
+function drawShadowRunner(){
+    if(!shadowRunner||!scaryMode)return;
+    const x=(shadowRunner.x-camera.x)*zoom,y=(shadowRunner.y-camera.y)*zoom,w=shadowRunner.width*zoom,h=shadowRunner.height*zoom;
+    ctx.save();
+    const g=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,80);
+    g.addColorStop(0,"rgba(255,0,0,.25)");
+    g.addColorStop(1,"rgba(255,0,0,0)");
+    ctx.fillStyle=g;
+    ctx.fillRect(x-80,y-80,w+160,h+160);
+    ctx.fillStyle="#000";
+    ctx.fillRect(x,y,w,h);
+    ctx.fillStyle="#f00";
+    ctx.fillRect(x+w*.25,y+h*.3,4*zoom,4*zoom);
+    ctx.fillRect(x+w*.65,y+h*.3,4*zoom,4*zoom);
+    ctx.restore();
+    }
+    function drawShadowDamager(){
 if(!shadowDamager||!scaryMode)return;
 let x=(shadowDamager.x-camera.x)*zoom,
 y=(shadowDamager.y-camera.y)*zoom,
@@ -1073,38 +1241,269 @@ ctx.fillRect(x+w*.25,y+h*.3,4*zoom,4*zoom);
 ctx.fillRect(x+w*.65,y+h*.3,4*zoom,4*zoom);
 ctx.restore();}
 function shadowTruthDeath(k){
-const m=["KNOW THE TRUTH ABOUT YOURSELF","HE IS WATCHING","YOU ARE NOT ALONE","HE IS COMING"];
-truthMessage=m[Math.random()*m.length|0];
-truthScreen=true;
-truthScreenStart=Date.now();
-addChatMessage(`<${playerName?.trim()||"Unnamed"}> learned the TRUTH from ${k}`);
-player.x=spawnX;
-player.y=spawnY-blockSize*2;
-player.velX=0;
-player.velY=0;
-playerHealth=maxHealth;
-player.air=player.maxAir;}
-function drawShadowRunner(){
-if(!shadowRunner||!scaryMode)return;
-const x=(shadowRunner.x-camera.x)*zoom,
-y=(shadowRunner.y-camera.y)*zoom,
-w=shadowRunner.width*zoom,
-h=shadowRunner.height*zoom;
-ctx.save();
-const g=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,80);
-g.addColorStop(0,"rgba(255,0,0,.25)");
-g.addColorStop(1,"rgba(255,0,0,0)");
-ctx.fillStyle=g;
-ctx.fillRect(x-80,y-80,w+160,h+160);
-ctx.fillStyle="#000";
-ctx.fillRect(x,y,w,h);
-ctx.fillStyle="#f00";
-ctx.fillRect(x+w*.25,y+h*.3,4*zoom,4*zoom);
-ctx.fillRect(x+w*.65,y+h*.3,4*zoom,4*zoom);
-ctx.restore();
+    backroomsJumpscareCount++;
+    const m=["KNOW THE TRUTH ABOUT YOURSELF","HE IS WATCHING","YOU ARE NOT ALONE","HE IS COMING"];
+    truthMessage=m[Math.random()*m.length|0];
+    truthScreen=true;
+    truthScreenStart=Date.now();
+    addChatMessage(`<${playerName?.trim()||"Unnamed"}> learned the TRUTH from ${k}`);
+    if(!unlockedAchievements.painfulTruth){
+        unlockedAchievements.painfulTruth=true;
+        gems+=50;
+        updateGemsUI();
+        const name=playerName?.trim()||"Unnamed";
+        addChatMessage(`${name} unlocked the achievement [The painful truth]`,"achievement");
+    }
+    if(backroomsJumpscareCount>=3){
+        backroomsJumpscareCount=0;
+        truthScreen=false;
+        enterBackrooms();
+        return;
+    }
+    player.x=spawnX;
+    player.y=spawnY-blockSize*2;
+    player.velX=0;
+    player.velY=0;
+    playerHealth=maxHealth;
+    player.air=player.maxAir;
+}
+function drawRitualFragments(){
+    ritualFragments.forEach(f=>{
+        const dx=(f.x*blockSize-camera.x)*zoom,dy=(f.y*blockSize-camera.y)*zoom,floatY=Math.sin(Date.now()/300)*6;
+        ctx.save();
+        ctx.translate(dx,dy-20*zoom+floatY);
+        drawTexture(ctx,"error_fragment",0,0,blockSize*zoom);
+        ctx.restore();
+    });
+}
+function generateBackrooms(){
+    backroomsWorld=[];
+    for(let y=0;y<backroomsHeight;y++){
+        backroomsWorld[y]=[];
+        for(let x=0;x<backroomsWidth;x++)backroomsWorld[y][x]=1;
+    }
+    const startX=1,startY=1;
+    backroomsWorld[startY][startX]=0;
+    const stack=[[startX,startY]],directions=[[0,-2],[2,0],[0,2],[-2,0]];
+    while(stack.length){
+        const [x,y]=stack[stack.length-1],possible=[];
+        for(const [dx,dy] of directions){
+            const nx=x+dx,ny=y+dy;
+            if(nx>0&&nx<backroomsWidth-1&&ny>0&&ny<backroomsHeight-1&&backroomsWorld[ny][nx]===1)possible.push([dx,dy]);
+        }
+        if(!possible.length){
+            stack.pop();
+            continue;
+        }
+        const [dx,dy]=possible[Math.floor(Math.random()*possible.length)];
+        backroomsWorld[y+dy/2][x+dx/2]=0;
+        backroomsWorld[y+dy][x+dx]=0;
+        stack.push([x+dx,y+dy]);
+    }
+    backroomsExit={x:backroomsWidth-2,y:backroomsHeight-2};
+    backroomsWorld[backroomsExit.y][backroomsExit.x]=2;
+    backroomsWorld[backroomsHeight-2][backroomsWidth-3]=0;
+    backroomsWorld[backroomsHeight-3][backroomsWidth-2]=0;
+    for(let x=0;x<backroomsWidth;x++)backroomsWorld[0][x]=1;
+}
+function enterBackrooms(){
+    if(backroomsActive)return;
+    generateBackrooms();
+    backroomsActive=true;
+    backroomsSavedPlayer={x:player.x,y:player.y};
+    player.x=player.y=blockSize;
+    player.velX=player.velY=0;
+    if("onGround"in player)player.onGround=false;
+    camera.x=camera.y=0;
+    addChatMessage("[BACKROOMS] You are not alone...");
+}
+function exitBackrooms(){
+    if(!backroomsActive)return;
+    backroomsActive=false;
+    if(backroomsSavedPlayer){
+        player.x=backroomsSavedPlayer.x;
+        player.y=backroomsSavedPlayer.y;
+    }
+    player.velX=player.velY=0;
+    backroomsWorld=null;
+    backroomsExit=null;
+    backroomsSavedPlayer=null;
+    addChatMessage("[BACKROOMS] You escaped.");
+}
+function drawBackrooms(){
+    if(!backroomsActive||!backroomsWorld)return;
+    ctx.fillStyle="#87CEEB";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    const startX=Math.floor(camera.x/blockSize)-1,startY=Math.floor(camera.y/blockSize)-1;
+    const endX=Math.ceil((camera.x+canvas.width/zoom)/blockSize)+1,endY=Math.ceil((camera.y+canvas.height/zoom)/blockSize)+1;
+    for(let y=startY;y<endY;y++)for(let x=startX;x<endX;x++){
+        if(x<0||y<0||x>=backroomsWidth||y>=backroomsHeight)continue;
+        const block=backroomsWorld[y][x],dx=(x*blockSize-camera.x)*zoom,dy=(y*blockSize-camera.y)*zoom,s=blockSize*zoom;
+        if(block===1){
+            ctx.fillStyle="#c9b86a";
+            ctx.fillRect(dx,dy,s,s);
+            ctx.fillStyle="rgba(120,100,40,.12)";
+            ctx.fillRect(dx+s*.15,dy+s*.2,s*.7,s*.08);
+            ctx.fillRect(dx+s*.25,dy+s*.65,s*.5,s*.06);
+        }else if(block===0){
+            ctx.fillStyle="#8c7f4f";
+            ctx.fillRect(dx,dy,s,s);
+            ctx.fillStyle="rgba(255,255,180,.08)";
+            ctx.fillRect(dx,dy,s,s*.08);
+        }else if(block===2){
+            ctx.fillStyle="#000";
+            ctx.fillRect(dx,dy,s,s);
+            ctx.fillStyle="rgba(255,255,255,.08)";
+            ctx.fillRect(dx+s*.2,dy+s*.2,s*.6,s*.6);
+        }
+    }
+    ctx.save();
+    const atmosphere=ctx.createRadialGradient(canvas.width/2,canvas.height/2,50,canvas.width/2,canvas.height/2,canvas.width*.8);
+    atmosphere.addColorStop(0,"rgba(255,240,150,.08)");
+    atmosphere.addColorStop(1,"rgba(60,40,0,.2)");
+    ctx.fillStyle=atmosphere;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+}
+function updateBackrooms(deltaTime){
+    if(!backroomsActive||!backroomsWorld)return;
+    if(keys.left)player.velX-=accel*deltaTime;
+    if(keys.right)player.velX+=accel*deltaTime;
+    player.velX=Math.max(-maxSpeed,Math.min(maxSpeed,player.velX));
+    if(!keys.left&&!keys.right){
+        player.velX*=Math.pow(friction,deltaTime);
+        if(Math.abs(player.velX)<.05)player.velX=0;
+    }
+    if(keys.up&&player.onGround&&!jumpLock){
+        player.onGround=false;
+        jumpLock=true;
+        const left=Math.floor(player.x/blockSize),right=Math.floor((player.x+player.width-1)/blockSize),current=Math.floor(player.y/blockSize);
+        let ceiling=-1;
+        for(let y=current-1;y>=0;y--){
+            if(backroomsWorld[y]?.[left]===1||backroomsWorld[y]?.[right]===1){
+                ceiling=y;
+                break;
+            }
+        }
+        if(ceiling>=0){
+            const distance=player.y-(ceiling+1)*blockSize,jumpSpeed=8.58,jumpHeight=jumpSpeed*jumpSpeed/(2*gravity);
+            player.velY=distance<jumpHeight?-Math.sqrt(Math.max(0,2*gravity*distance)):-jumpSpeed;
+        }else player.velY=-8.58;
+    }
+    if(!keys.up)jumpLock=false;
+    player.velY+=gravity*deltaTime;
+    if(player.velY>12)player.velY=12;
+    let nextX=player.x+player.velX*deltaTime;
+    const leftX=Math.floor(nextX/blockSize),rightX=Math.floor((nextX+player.width-1)/blockSize),topY=Math.floor(player.y/blockSize),bottomY=Math.floor((player.y+player.height-1)/blockSize);
+    if(player.velX<0){
+        if(backroomsWorld[topY]?.[leftX]===1||backroomsWorld[bottomY]?.[leftX]===1){
+            player.x=(leftX+1)*blockSize;
+            player.velX=0;
+        }else player.x=nextX;
+    }else if(player.velX>0){
+        if(backroomsWorld[topY]?.[rightX]===1||backroomsWorld[bottomY]?.[rightX]===1){
+            player.x=rightX*blockSize-player.width;
+            player.velX=0;
+        }else player.x=nextX;
+    }
+    let nextY=player.y+player.velY*deltaTime;
+    const left=Math.floor(player.x/blockSize),right=Math.floor((player.x+player.width-1)/blockSize);
+    if(player.velY>0){
+        const bottom=Math.floor((nextY+player.height-1)/blockSize);
+        if(backroomsWorld[bottom]?.[left]===1||backroomsWorld[bottom]?.[right]===1){
+            player.y=bottom*blockSize-player.height;
+            player.velY=0;
+            player.onGround=true;
+        }else{
+            player.y=nextY;
+            player.onGround=false;
+        }
+    }else if(player.velY<0){
+        const top=Math.floor(nextY/blockSize);
+        if(backroomsWorld[top]?.[left]===1||backroomsWorld[top]?.[right]===1){
+            player.y=(top+1)*blockSize;
+            player.velY=0;
+        }else player.y=nextY;
+    }else player.y=nextY;
+    player.x=Math.max(blockSize,Math.min(player.x,(backroomsWidth-2)*blockSize-player.width));
+    player.y=Math.max(blockSize,Math.min(player.y,(backroomsHeight-2)*blockSize-player.height));
+    const centerX=Math.floor((player.x+player.width/2)/blockSize),centerY=Math.floor((player.y+player.height/2)/blockSize);
+    if(backroomsExit&&centerX===backroomsExit.x&&centerY===backroomsExit.y){
+        exitBackrooms();
+        return;
+    }
+    updateBackroomsCamera();
+}
+function updateBackroomsCamera(){
+    if(!backroomsActive)return;
+    const targetX=player.x+player.width/2-canvas.width/(2*zoom),targetY=player.y+player.height/2-canvas.height/(2*zoom);
+    camera.x+=(targetX-camera.x)*.15;
+    camera.y+=(targetY-camera.y)*.15;
+    camera.x=Math.max(0,Math.min(camera.x,backroomsWidth*blockSize-canvas.width/zoom));
+    camera.y=Math.max(0,Math.min(camera.y,backroomsHeight*blockSize-canvas.height/zoom));
+}
+function drawBackroomsUI() {
+    if (!backroomsActive) return;
+
+    ctx.save();
+
+    ctx.fillStyle = "rgba(0,0,0,.15)";
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle = "rgba(255,240,150,.8)";
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "BACKROOMS",
+        canvas.width / 2,
+        30
+    );
+
+    ctx.restore();
 }
 function draw(){
-waterTime=Date.now()*.001;
+
+    waterTime = Date.now() * .001;
+
+    if (screenShake) {
+        ctx.save();
+
+        ctx.translate(
+            (Math.random() - .5) * screenShake,
+            (Math.random() - .5) * screenShake
+        );
+
+        screenShake *= .92;
+    } else {
+        ctx.save();
+    }
+
+    // =========================
+    // BACKROOMS
+    // =========================
+
+    if (backroomsActive) {
+
+        drawBackrooms();
+
+        drawPlayer();
+
+        drawBackroomsUI();
+
+        ctx.restore();
+
+        return;
+    }
+
+    // =========================
+    // NORMALNY ŚWIAT
+    // =========================
 if(screenShake){
 ctx.save();
 ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake);
@@ -1134,7 +1533,7 @@ const p=(Date.now()-t.plantedAt)/t.growTime;
 t.stage=p>=1?2:p>=.5?1:0;
 drawTree(ctx,t.x,t.y,blockSize,t.stage,t.type);
 });
-drawBreaking();drawDrops();drawSeedCombineHint();drawGhostBlock();drawWorldLockWrench();
+drawBreaking();drawDrops();drawRitualFragments();drawSeedCombineHint();drawGhostBlock();drawWorldLockWrench();
 if(worldBackground!=="scary")drawWeatherEffects();
 drawShadowRunner();drawShadowDamager();drawPlayer();drawBars();
 if(worldBackground!=="scary")drawShaders();
@@ -1161,7 +1560,7 @@ ctx.globalAlpha=1;
 }
 ctx.restore();
 }
-function drawTruthScreen(){
+    function drawTruthScreen(){
 if(!truthScreen)return;
 const e=Date.now()-truthScreenStart;
 if(e>1500){truthScreen=0;return;}
@@ -1282,9 +1681,74 @@ const dx=(x*blockSize-camera.x)*zoom,dy=(y*blockSize-camera.y)*zoom;
 const img=crackImages[s];
 if(img)ctx.drawImage(img,dx,dy,blockSize*zoom,blockSize*zoom);
 }
-function update(dt){
-updateMovement(dt);checkLavaCollision();updateAirSystem();resizeCanvas();updateCamera();updateBreaking();updateDrops();updateShadowRunner();updateShadowDamager();playerAttack();
-if(player.velY<0)player.onGround=false;
+let mountainAchievementArmed = false;
+let mountainAchievementDone = false;
+function checkTopToBottomFall(){
+    if(mountainAchievementDone) return;
+    if(!world || !world.length) return;
+    const mapHeight = world.length;
+    const playerTopBlock = Math.floor(player.y / blockSize);
+    const playerBottomBlock = Math.floor(
+        (player.y + player.height - 1) / blockSize
+    );
+    const topLimit = 1;
+    let bedrockStart = -1;
+    for(let y = mapHeight - 1; y >= 0; y--){
+        let hasBedrock = false;
+        for(let x = 0; x < (world[y]?.length || 0); x++){
+            if(world[y][x] === 8){
+                hasBedrock = true;
+                break;
+            }
+        }
+        if(hasBedrock){
+            bedrockStart = y;
+        }else if(bedrockStart !== -1){
+            break;
+        }
+    }
+    const bottomLimit =
+        bedrockStart >= 0
+            ? bedrockStart - 1
+            : mapHeight - 1;
+    if(!mountainAchievementArmed){
+        if(playerTopBlock <= topLimit){
+            mountainAchievementArmed = true;
+        }
+    }
+    if(
+        mountainAchievementArmed &&
+        player.velY > 0 &&
+        playerBottomBlock >= bottomLimit
+    ){
+        mountainAchievementArmed = false;
+        mountainAchievementDone = true;
+        gems += 150;
+        updateGemsUI();
+        unlockedAchievements.mountainClaws = true;
+        addChatMessage(
+            `${playerName?.trim() || "Unnamed"} unlocked the achievement [Full speed downhill!]`,
+            "achievement"
+        );
+    }
+}
+    function update(dt){
+    resizeCanvas();
+    if(backroomsActive){
+        updateBackrooms(dt);
+        return;
+    }
+    updateMovement(dt);
+    checkLavaCollision();
+    updateAirSystem();
+    updateCamera();
+    updateBreaking();
+    updateDrops();
+    updateShadowRunner();
+    updateShadowDamager();
+    playerAttack();
+    checkTopToBottomFall();
+    if(player.velY<0)player.onGround=false;
 }
 let lastTime=performance.now();
 function loop(t){
@@ -1331,6 +1795,7 @@ lastInventoryClick.item=item;
 lastInventoryClick.time=now;
 hotbar.block=item;
 updateHotbar();
+showItemName(ITEM_DISPLAY_NAMES[item] || item);
 };
 });
 document.querySelectorAll("#inventoryUI .slot").forEach(slot=>{const canvas = document.createElement("canvas");canvas.width = 40;canvas.height = 40;slot.appendChild(canvas);const count = document.createElement("div");count.className = "count";slot.appendChild(count);});
@@ -1339,259 +1804,37 @@ let lastInventoryClick = {
     item: null,
     time: 0
 };
-function updateInventoryUI(){
-const slots=document.querySelectorAll("#inventoryUI .slot");
-const items=Object.keys(inventory).filter(k=>inventory[k]>0);
-slots.forEach((s,i)=>{
-let c=s.querySelector("canvas"),t=s.querySelector(".count");
-if(!c){c=document.createElement("canvas");c.width=40;c.height=40;s.appendChild(c);}
-if(!t){t=document.createElement("div");t.className="count";s.appendChild(t);}
-const g=c.getContext("2d");
-g.clearRect(0,0,40,40);
-const it=items[i];
-if(!it){t.innerText="";return;}
-drawItemIcon(g,it);
-t.innerText=inventory[it];
-t.style.color=it==="marble"?"black":"white";});}
-function isInventoryFull(){const maxSlots = document.querySelectorAll("#inventoryUI .slot").length;const usedSlots = Object.keys(inventory).filter(k => inventory[k] > 0).length;const hasFreeStack = Object.values(inventory).some(v => v > 0 && v < MAX_STACK);return usedSlots >= maxSlots && !hasFreeStack;}
-function showInventoryFull(){inventoryFullMessageTime = Date.now();}
-function updateHotbar(){
-document.querySelectorAll("#hotbar .slot").forEach((slot,i)=>{
-slot.classList.toggle("selected",i===hotbar.selected);
-slot.innerHTML="";
-const canvas=document.createElement("canvas"),count=document.createElement("div"),ctx=canvas.getContext("2d");
-canvas.width=canvas.height=40;
-count.className="count";
-slot.append(canvas,count);
-ctx.clearRect(0,0,40,40);
-ctx.fillStyle="white";
-ctx.font="28px Arial";
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-if(i===0)return ctx.fillText("✊",20,20);
-if(i===2)return ctx.fillText("🔧",20,20);
-if(i===1&&hotbar.block){
-drawItemIcon(ctx,hotbar.block);
-const amount=inventory[hotbar.block]||0;
-count.innerText=amount||"";
-count.style.color=hotbar.block==="marble"?"black":"white";}});}
-function drawTexture(ctx,key,x,y,size){
-if(!blockTextures[key])blockTextures[key]=generateBlockTexture(key);
-ctx.drawImage(blockTextures[key],x,y,size,size);}
-function drawItemIcon(ctx,item){
-drawTexture(ctx,item==="soil"?"soil_grass":item,0,0,40);}
+function updateInventoryUI(){const s=document.querySelectorAll("#inventoryUI .slot"),i=Object.keys(inventory).filter(k=>inventory[k]>0);s.forEach((e,n)=>{let c=e.querySelector("canvas"),t=e.querySelector(".count");c||(c=document.createElement("canvas"),c.width=c.height=40,e.appendChild(c));t||(t=document.createElement("div"),t.className="count",e.appendChild(t));const g=c.getContext("2d"),it=i[n];g.clearRect(0,0,40,40);if(!it)return t.innerText="";drawItemIcon(g,it);t.innerText=inventory[it];t.style.color=it==="marble"?"black":"white"})}
+function isInventoryFull(){const m=document.querySelectorAll("#inventoryUI .slot").length,u=Object.keys(inventory).filter(k=>inventory[k]>0).length;return u>=m&&!Object.values(inventory).some(v=>v>0&&v<MAX_STACK)}
+function showInventoryFull(){inventoryFullMessageTime=Date.now()}
+function updateHotbar(){document.querySelectorAll("#hotbar .slot").forEach((s,i)=>{s.classList.toggle("selected",i===hotbar.selected);s.innerHTML="";const c=document.createElement("canvas"),n=document.createElement("div"),x=c.getContext("2d");c.width=c.height=40;n.className="count";s.append(c,n);x.fillStyle="white";x.font="28px Arial";x.textAlign=x.textBaseline="center";if(i===0)return x.fillText("✊",20,20);if(i===2)return x.fillText("🔧",20,20);if(i===1&&hotbar.block){drawItemIcon(x,hotbar.block);n.innerText=inventory[hotbar.block]||"";n.style.color=hotbar.block==="marble"?"black":"white"}})}
+function drawTexture(c,k,x,y,s){blockTextures[k]||(blockTextures[k]=generateBlockTexture(k));c.drawImage(blockTextures[k],x,y,s,s)}
+function drawItemIcon(c,i){drawTexture(c,i==="soil"?"soil_grass":i,0,0,40)}
 let drops=[];
-function spawnDrop(x,y,type){
-if(drops.length>=200)return;
-drops.push({
-x:x*blockSize+blockSize/2-8,
-y:y*blockSize+blockSize/2-8,
-width:16,
-height:16,
-type,
-count:1,
-offset:Math.random()*Math.PI*2,
-amplitude:4,
-collected:false});}
-function updateDrops(){
-for(let i=0;i<drops.length;i++){
-for(let j=i+1;j<drops.length;j++){
-const a=drops[i],b=drops[j];
-if(a.type===b.type&&Math.hypot(a.x-b.x,a.y-b.y)<24){
-a.count+=b.count;
-drops.splice(j--,1);}}}
-drops.forEach(d=>{
-d.yOffset=Math.sin(Date.now()/300+d.offset)*d.amplitude;
-const c=player.x<d.x+d.width&&player.x+player.width>d.x&&player.y<d.y+d.height&&player.y+player.height>d.y;
-if(!c)return;
-if(d.type==="gem"){
-gems+=d.count;
-updateGemsUI();
-}else{
-inventory[d.type]??=0;
-const f=MAX_STACK-inventory[d.type];
-if(f<=0){showInventoryFull();return;}
-inventory[d.type]+=Math.min(d.count,f);}
-d.collected=1;
-updateInventoryUI();
-updateHotbar();});
-for(let i=drops.length-1;i>=0;i--){
-if(drops[i].collected)drops.splice(i,1);}}
-function drawDrops(){
-drops.forEach(d=>{
-if(blindnessActive){
-const px=player.x,py=player.y;
-if(Math.hypot(d.x-px,d.y-py)>blindnessRadius*blockSize)return;}
-const dx=Math.floor((d.x-camera.x)*zoom);
-const dy=Math.floor((d.y+(d.yOffset||0)-camera.y)*zoom);
-ctx.save();
-ctx.translate(dx,dy);
-const s=16*zoom,p=s/8;
-let t=d.type==="soil"?"soil_grass":d.type;
-drawTexture(ctx,t,0,0,s);
-if(d.count>1){
-ctx.fillStyle="white";
-ctx.strokeStyle="black";
-ctx.lineWidth=3;
-ctx.font=`${10*zoom}px Arial`;
-ctx.textAlign="right";
-const txt=d.count+"";
-ctx.strokeText(txt,16*zoom,16*zoom);
-ctx.fillText(txt,16*zoom,16*zoom);}
-ctx.restore();
-});}
-function startBreaking(mouseX,mouseY){
-const r=canvas.getBoundingClientRect();
-const wx=Math.floor((mouseX-r.left)/zoom/blockSize+camera.x/blockSize);
-const wy=Math.floor((mouseY-r.top)/zoom/blockSize+camera.y/blockSize);
-currentBreakTarget.x = wx;
-currentBreakTarget.y = wy;
-const px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize);
-if((wx-px)**2+(wy-py)**2>9)return;
-const tree=trees.find(t=>t.x===wx&&t.y===wy);
-if(tree){
-const g=(Date.now()-tree.plantedAt)/tree.growTime;
-if(g<1)return;
-const m={soil_seed:"soil",granite_seed:"granite",cave_bg_seed:"cave_bg",grass_seed:"grass",lava_seed:"lava",wood_seed:"wood",obsidian_seed:"obsidian",marble_seed:"marble",sand_seed:"sand",sandstone_seed:"sandstone",water_seed:"water",gem_soil_seed:"gem_soil",black_brick_seed:"black_brick",concrete_block_1x1_seed:"concrete_block_1x1",glass_seed:"glass",magic_stuff_seed:"magic_stuff",metal_plate_seed:"metal_plate",red_brick_seed:"red_brick"}[tree.type];
-if(m){
-const a=Math.floor(Math.random()*8)+1;
-for(let i=0;i<a;i++)spawnDrop(tree.x,tree.y,m);
-if(tree.type==="gem_soil_seed")spawnDrop(tree.x,tree.y,"gem"),Math.random()<0.5&&spawnDrop(tree.x,tree.y,"gem");
-else Math.random()<0.4&&spawnDrop(tree.x,tree.y,"gem");}
-trees=trees.filter(t=>t!==tree);
-return;}
-const tb=world[wy]?.[wx];
-if(worldLockState==="glitch"&&tb===20){addChatMessage("[WORLD] World Lock is protected in Glitch Mode");return;}
-if(worldOwner&&!worldPublic){
-const n=playerName?.trim()||"Unnamed";
-if(n!==worldOwner&&tb!==20){addChatMessage("[WORLD] You can't break here!","world");return;}}
-let b=world[wy]?.[wx]||0;
-let isBg=false;
-if(!b){
-b=background[wy]?.[wx]||0;
-if(b===3){
-breaking={x:wx,y:wy,progress:0,maxProgress:2,lastHitTime:Date.now(),cachedBlock:b};
-isBreakingHeld=true;}
-return;}
-const h=BLOCKS?.[b]?.hits||2;
-breaking={x:wx,y:wy,progress:0,maxProgress:h,lastHitTime:Date.now(),cachedBlock:b};
-isBreakingHeld=true;}
-function openWorldLockMenu(mouseX,mouseY){
-if(worldLockState==="glitch"){
-if(item==="world_lock"){addChatMessage("[WORLD] World Lock is disabled in Glitch Mode");return;}
-addChatMessage("[WORLD] Glitched Lock blocks all editing!");return;}
-const r=canvas.getBoundingClientRect();
-const wx=Math.floor((mouseX-r.left)/zoom/blockSize+camera.x/blockSize);
-const wy=Math.floor((mouseY-r.top)/zoom/blockSize+camera.y/blockSize);
-if(world[wy]?.[wx]!==20)return;
-const n=playerName?.trim()||"Unnamed";
-if(!worldOwner||n!==worldOwner)return;
-worldLockPanel.style.display="block";
-worldLockMenuOpen=true;
-publicWorldToggle.checked=worldPublic;
-worldBackgroundSelect.value=worldBackground;}
-function updateBreaking(){
-if(!isBreakingHeld){breaking=null;return;}
-const now=Date.now();
-const x=currentBreakTarget.x,y=currentBreakTarget.y;
-let b=world[y]?.[x]??0,isBg=false;
-if(!b){
-const bg=background[y]?.[x];
-if(bg){b=bg;isBg=true;}}
-if(!b){breaking=null;return;}
-if(!breaking||breaking.x!==x||breaking.y!==y){
-const m=BLOCKS?.[b];
-breaking={x,y,progress:0,maxProgress:m?.hits??2,lastHitTime:now,cachedBlock:b,isBackground:isBg};}
-if(worldLockState==="glitch"&&b===20){addChatMessage("[WORLD] World Lock cannot be broken in Glitch Mode");breaking=null;return;}
-if(now-breaking.lastHitTime>=200){breaking.progress++;breaking.lastHitTime=now;}
-if(breaking.progress<breaking.maxProgress)return;
-if(Math.random()<(b===13?1:b===20?0:0.4))spawnDrop(x,y,"gem");
-updateGemsUI();
-const D={1:{block:"soil",seed:"soil_seed",nothing:40,blockChance:35},2:{block:"granite",seed:"granite_seed",nothing:45,blockChance:39},3:{block:"cave_bg",seed:"cave_bg_seed",nothing:40,blockChance:35},4:{block:"grass",seed:"grass_seed",nothing:40,blockChance:35},5:{block:"lava",seed:"lava_seed",nothing:35,blockChance:35},6:{block:"wood",seed:"wood_seed",nothing:40,blockChance:35},7:{block:"obsidian",seed:"obsidian_seed",nothing:40,blockChance:40},9:{block:"marble",seed:"marble_seed",nothing:40,blockChance:35},10:{block:"sand",seed:"sand_seed",nothing:40,blockChance:35},11:{block:"sandstone",seed:"sandstone_seed",nothing:45,blockChance:40},12:{block:"water",seed:"water_seed",nothing:40,blockChance:40},13:{block:"gem_soil",seed:"gem_soil_seed",nothing:40,blockChance:40},14:{block:"black_brick",seed:"black_brick_seed",nothing:40,blockChance:40},15:{block:"concrete_block_1x1",seed:"concrete_block_1x1_seed",nothing:40,blockChance:40},16:{block:"glass",seed:"glass_seed",nothing:40,blockChance:40},17:{block:"magic_stuff",seed:"magic_stuff_seed",nothing:40,blockChance:40},18:{block:"metal_plate",seed:"metal_plate_seed",nothing:40,blockChance:40},19:{block:"red_brick",seed:"red_brick_seed",nothing:40,blockChance:40},20:{block:"world_lock",seed:null,nothing:0,blockChance:100}}[b];
-let db=null;
-if(D){
-const r=Math.random()*100,m=D.nothing+D.blockChance;
-if(r>=D.nothing)db=r<m?D.block:D.seed;}
-if(b===20){
-inventory.world_lock++;updateInventoryUI();updateHotbar();
-addChatMessage(`<${playerName?.trim()||"Unnamed"}> unlocked world`);
-worldOwner=null;worldLockPos=null;
-}else if(db)spawnDrop(x,y,db);
-const a=isBg?background:world;
-a[y][x]=0;
-breaking=null;
-updateInventoryUI();updateHotbar();
-updateInventoryUI();updateHotbar();}
-function placeBlock(mx,my){
-const r=canvas.getBoundingClientRect();
-const wx=Math.floor((mx-r.left)/zoom/blockSize+camera.x/blockSize);
-const wy=Math.floor((my-r.top)/zoom/blockSize+camera.y/blockSize);
-const px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize);
-if((wx-px)**2+(wy-py)**2>9)return;
-if(!hotbar.block || inventory[hotbar.block] <= 0){
-    hotbar.block=null;
-    hotbar.selected=0;
-    updateHotbar();
-    return;}
-const item=hotbar.block,name=playerName?.trim()||"Unnamed";
-const isSeed=item.includes("_seed"),isBg=item==="cave_bg";
-const tree=trees.find(t=>t.x===wx&&t.y===wy);
-const cell=world[wy]?.[wx]??0,bg=background[wy]?.[wx]??0;
-if(worldLockState==="glitch" && item==="world_lock"){
-    addChatMessage("[WORLD] World Lock is disabled in Glitch Mode","world");
-    return;}
-if(worldOwner && name !== worldOwner && item !== "world_lock"){
-    addChatMessage("[WORLD] This world belongs to another player!","world");
-    return;}
-if(isSeed){
-if(tree){
-const r=getSeedResult(tree.type,item);
-if(!r)return;
-trees=trees.filter(t=>t!==tree);
-trees.push({x:wx,y:wy,type:r,stage:0,plantedAt:Date.now(),growTime:["concrete_block_1x1_seed","glass_seed","magic_stuff_seed","metal_plate_seed","red_brick_seed"].includes(item)?60000:30000});
-}else{
-if(cell)return;
-const below=world[wy+1]?.[wx];
-if(!below||!BLOCKS[below]?.solid)return;
-trees.push({x:wx,y:wy,type:item,stage:0,plantedAt:Date.now(),growTime:30000});}
-inventory[item]--;if(!inventory[item]){inventory[item]=0;hotbar.block=null;hotbar.selected=0;}
-updateInventoryUI();updateHotbar();return;}
-if(isBg){
-if(!background[wy])background[wy]=[];
-if(bg)return;
-background[wy][wx]=3;
-inventory[item]--;if(!inventory[item]){inventory[item]=0;hotbar.block=null;hotbar.selected=0;}
-updateInventoryUI();updateHotbar();return;}
+function spawnDrop(x,y,type){if(drops.length>=200)return;drops.push({x:x*blockSize+blockSize/2-8,y:y*blockSize+blockSize/2-8,width:16,height:16,type,count:1,offset:Math.random()*Math.PI*2,amplitude:4,collected:0})}
+function updateDrops(){for(let i=0;i<drops.length;i++)for(let j=i+1;j<drops.length;j++){const a=drops[i],b=drops[j];if(a.type===b.type&&Math.hypot(a.x-b.x,a.y-b.y)<24)a.count+=b.count,drops.splice(j--,1)}drops.forEach(d=>{d.yOffset=Math.sin(Date.now()/300+d.offset)*d.amplitude;const c=player.x<d.x+d.width&&player.x+player.width>d.x&&player.y<d.y+d.height&&player.y+player.height>d.y;if(!c)return;if(d.type==="gem")gems+=d.count,updateGemsUI();else{inventory[d.type]??=0;const f=MAX_STACK-inventory[d.type];if(f<=0)return showInventoryFull();inventory[d.type]+=Math.min(d.count,f);if(inventory.glitch_shard>0&&inventory.error_fragment>0&&!indexProgress.step3){indexProgress.step3=!0;mission3.innerHTML="✔ 3. Get Glitch Shard and Error Fragment";addChatMessage("[INDEX] Unlocked new task...");const m=document.getElementById("mission4");m&&(m.style.display="block",m.style.opacity="1",m.innerHTML="4. Do a ritual")}}d.collected=1;updateInventoryUI();updateHotbar()});for(let i=drops.length-1;i>=0;i--)drops[i].collected&&drops.splice(i,1)}
+function drawDrops(){drops.forEach(d=>{if(blindnessActive&&Math.hypot(d.x-player.x,d.y-player.y)>blindnessRadius*blockSize)return;const x=Math.floor((d.x-camera.x)*zoom),y=Math.floor((d.y+(d.yOffset||0)-camera.y)*zoom),s=16*zoom;ctx.save();ctx.translate(x,y);drawTexture(ctx,d.type==="soil"?"soil_grass":d.type,0,0,s);if(d.count>1){ctx.fillStyle="white";ctx.strokeStyle="black";ctx.lineWidth=3;ctx.font=`${10*zoom}px Arial`;ctx.textAlign="right";const t=d.count+"";ctx.strokeText(t,s,s);ctx.fillText(t,s,s)}ctx.restore()})}
+function startBreaking(mx,my){const r=canvas.getBoundingClientRect(),wx=Math.floor((mx-r.left)/zoom/blockSize+camera.x/blockSize),wy=Math.floor((my-r.top)/zoom/blockSize+camera.y/blockSize),px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize);currentBreakTarget.x=wx;currentBreakTarget.y=wy;if(Math.abs(wx-px)>3||Math.abs(wy-py)>3)return;const t=trees.find(t=>t.x===wx&&t.y===wy);if(t){if((Date.now()-t.plantedAt)/t.growTime<1)return;const m={soil_seed:"soil",granite_seed:"granite",cave_bg_seed:"cave_bg",grass_seed:"grass",lava_seed:"lava",wood_seed:"wood",obsidian_seed:"obsidian",marble_seed:"marble",sand_seed:"sand",sandstone_seed:"sandstone",water_seed:"water",gem_soil_seed:"gem_soil",black_brick_seed:"black_brick",concrete_block_1x1_seed:"concrete_block_1x1",glass_seed:"glass",magic_stuff_seed:"magic_stuff",metal_plate_seed:"metal_plate",red_brick_seed:"red_brick"}[t.type];if(m){let a=Math.floor(Math.random()*8)+1;for(let i=0;i<a;i++)spawnDrop(t.x,t.y,m);t.type==="gem_soil_seed"?(spawnDrop(t.x,t.y,"gem"),Math.random()<.5&&spawnDrop(t.x,t.y,"gem")):Math.random()<.4&&spawnDrop(t.x,t.y,"gem")}trees=trees.filter(x=>x!==t);return}const tb=world[wy]?.[wx];if(worldLockState==="glitch"&&tb===20)return addChatMessage("[WORLD] World Lock is protected in Glitch Mode");if(worldOwner&&!worldPublic&&(playerName?.trim()||"Unnamed")!==worldOwner&&tb!==20)return addChatMessage("[WORLD] You can't break here!","world");let b=world[wy]?.[wx]||0;if(!b){b=background[wy]?.[wx]||0;if(b===3)breaking={x:wx,y:wy,progress:0,maxProgress:2,lastHitTime:Date.now(),cachedBlock:b},isBreakingHeld=!0;return}breaking={x:wx,y:wy,progress:0,maxProgress:BLOCKS?.[b]?.hits||2,lastHitTime:Date.now(),cachedBlock:b};isBreakingHeld=!0}
+function openWorldLockMenu(mx,my){if(worldLockState==="glitch")return addChatMessage("[WORLD] Glitched Lock blocks all editing!");const r=canvas.getBoundingClientRect(),wx=Math.floor((mx-r.left)/zoom/blockSize+camera.x/blockSize),wy=Math.floor((my-r.top)/zoom/blockSize+camera.y/blockSize);if(world[wy]?.[wx]!==20||!worldOwner||(playerName?.trim()||"Unnamed")!==worldOwner)return;worldLockPanel.style.display="block";worldLockMenuOpen=!0;publicWorldToggle.checked=worldPublic;worldBackgroundSelect.value=worldBackground}
+function updateBreaking(){if(!isBreakingHeld)return breaking=null;const n=Date.now(),x=currentBreakTarget.x,y=currentBreakTarget.y,px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize);if(Math.abs(x-px)>3||Math.abs(y-py)>3)return breaking=null,isBreakingHeld=!1;let b=world[y]?.[x]??0,g=!1;if(!b){const bg=background[y]?.[x];bg&&(b=bg,g=!0)}if(!b)return breaking=null;if(!breaking||breaking.x!==x||breaking.y!==y)breaking={x,y,progress:0,maxProgress:BLOCKS?.[b]?.hits??2,lastHitTime:n,cachedBlock:b,isBackground:g};if(worldLockState==="glitch"&&b===20)return addChatMessage("[WORLD] World Lock cannot be broken in Glitch Mode"),breaking=null;if(n-breaking.lastHitTime>=200)breaking.progress++,breaking.lastHitTime=n;if(breaking.progress<breaking.maxProgress)return;Math.random()<(b===13?1:b===20?0:.4)&&spawnDrop(x,y,"gem");updateGemsUI();const D={1:{block:"soil",seed:"soil_seed",nothing:40,blockChance:35},2:{block:"granite",seed:"granite_seed",nothing:45,blockChance:39},3:{block:"cave_bg",seed:"cave_bg_seed",nothing:40,blockChance:35},4:{block:"grass",seed:"grass_seed",nothing:40,blockChance:35},5:{block:"lava",seed:"lava_seed",nothing:35,blockChance:35},6:{block:"wood",seed:"wood_seed",nothing:40,blockChance:35},7:{block:"obsidian",seed:"obsidian_seed",nothing:40,blockChance:40},9:{block:"marble",seed:"marble_seed",nothing:40,blockChance:35},10:{block:"sand",seed:"sand_seed",nothing:40,blockChance:35},11:{block:"sandstone",seed:"sandstone_seed",nothing:45,blockChance:40},12:{block:"water",seed:"water_seed",nothing:40,blockChance:40},13:{block:"gem_soil",seed:"gem_soil_seed",nothing:40,blockChance:40},14:{block:"black_brick",seed:"black_brick_seed",nothing:40,blockChance:40},15:{block:"concrete_block_1x1",seed:"concrete_block_1x1_seed",nothing:40,blockChance:40},16:{block:"glass",seed:"glass_seed",nothing:40,blockChance:40},17:{block:"magic_stuff",seed:"magic_stuff_seed",nothing:40,blockChance:40},18:{block:"metal_plate",seed:"metal_plate_seed",nothing:40,blockChance:40},19:{block:"red_brick",seed:"red_brick_seed",nothing:40,blockChance:40},20:{block:"world_lock",seed:null,nothing:0,blockChance:100},22:{block:"teleportation_orb",seed:null,nothing:0,blockChance:100}}[b];let d=null;if(D){const r=Math.random()*100,m=D.nothing+D.blockChance;r>=D.nothing&&(d=r<m?D.block:D.seed)}if(b===20){inventory.world_lock++;updateInventoryUI();updateHotbar();addChatMessage(`<${playerName?.trim()||"Unnamed"}> unlocked world`);worldOwner=worldLockPos=null}else if(b===22){teleportOrbPos=null;document.getElementById("teleportOrbButton")?.remove();spawnDrop(x,y,"teleportation_orb")}else d&&spawnDrop(x,y,d);(g?background:world)[y][x]=0;breaking=null;updateInventoryUI();updateHotbar()}
+function placeBlock(mx,my){const r=canvas.getBoundingClientRect(),wx=Math.floor((mx-r.left)/zoom/blockSize+camera.x/blockSize),wy=Math.floor((my-r.top)/zoom/blockSize+camera.y/blockSize),px=Math.floor(player.x/blockSize),py=Math.floor(player.y/blockSize);if((wx-px)**2+(wy-py)**2>9)return;if(!hotbar.block||inventory[hotbar.block]<=0)return hotbar.block=null,hotbar.selected=0,updateHotbar();const item=hotbar.block,name=playerName?.trim()||"Unnamed",tree=trees.find(t=>t.x===wx&&t.y===wy),cell=world[wy]?.[wx]??0,bg=background[wy]?.[wx]??0,isSeed=item.includes("_seed"),isBg=item==="cave_bg";
+if(item==="error_fragment"){if(world[wy]?.[wx]===21){ritualFragments.push({x:wx,y:wy});inventory[item]--;addChatMessage("The ritual was successful","ritual");setTimeout(()=>addChatMessage("But something...","ritual"),5000);if(hasIndex&&indexProgress.step3&&!indexProgress.step4){indexProgress.step4=!0;mission4.innerHTML="✔ 4. Do a ritual";addChatMessage("[INDEX] Unlocked new task...");const m=document.getElementById("mission5");m&&(m.style.display="block",m.style.opacity="1",m.innerHTML="5. Get a Glitch Hammer")}!inventory[item]&&(inventory[item]=0,hotbar.block=null);updateInventoryUI();updateHotbar()}return}
+if(worldLockState==="glitch"&&item==="world_lock")return addChatMessage("[WORLD] World Lock is disabled in Glitch Mode","world");
+if(worldOwner&&name!==worldOwner&&item!=="world_lock")return addChatMessage("[WORLD] This world belongs to another player!","world");
+if(isSeed){if(tree){const r=getSeedResult(tree.type,item);if(!r)return;trees=trees.filter(t=>t!==tree);trees.push({x:wx,y:wy,type:r,stage:0,plantedAt:Date.now(),growTime:["concrete_block_1x1_seed","glass_seed","magic_stuff_seed","metal_plate_seed","red_brick_seed"].includes(item)?6e4:3e4})}else{if(cell)return;const b=world[wy+1]?.[wx];if(!b||!BLOCKS[b]?.solid)return;trees.push({x:wx,y:wy,type:item,stage:0,plantedAt:Date.now(),growTime:3e4})}inventory[item]--;!inventory[item]&&(inventory[item]=0,hotbar.block=null,hotbar.selected=0);updateInventoryUI();updateHotbar();return}
+if(isBg){background[wy]??=[];if(bg)return;background[wy][wx]=3;inventory[item]--;!inventory[item]&&(inventory[item]=0,hotbar.block=null,hotbar.selected=0);updateInventoryUI();updateHotbar();return}
 if(tree||cell)return;
-const bl=wx*blockSize,bt=wy*blockSize,br=bl+blockSize,bb=bt+blockSize;
-if(player.x+player.width>bl&&player.x<br&&player.y+player.height>bt&&player.y<bb)return;
-if(!world[wy])world[wy]=[];
-const id={soil:1,granite:2,grass:4,lava:5,wood:6,obsidian:7,marble:9,sand:10,sandstone:11,water:12,gem_soil:13,black_brick:14,concrete_block_1x1:15,glass:16,magic_stuff:17,metal_plate:18,red_brick:19,world_lock:20}[item];
+const bl=wx*blockSize,bt=wy*blockSize;
+if(player.x+player.width>bl&&player.x<bl+blockSize&&player.y+player.height>bt&&player.y<bt+blockSize)return;
+world[wy]??=[];
+if(item==="teleportation_orb"){if(teleportOrbPos)return addChatMessage("[ORB] Only one Teleportation Orb can exist in a world.");teleportOrbPos={x:wx,y:wy};world[wy][wx]=22;inventory.teleportation_orb--;if(inventory.teleportation_orb<=0)inventory.teleportation_orb=0,hotbar.block=null;createTeleportButton();updateInventoryUI();updateHotbar();return}
+const id={soil:1,granite:2,grass:4,lava:5,wood:6,obsidian:7,marble:9,sand:10,sandstone:11,water:12,gem_soil:13,black_brick:14,concrete_block_1x1:15,glass:16,magic_stuff:17,metal_plate:18,red_brick:19,world_lock:20,glitch_shard:21}[item];
 if(id===undefined)return;
-if(worldLockState==="glitch" && id===20){
-    addChatMessage("[WORLD] World Lock is disabled in Glitch Mode","world");
-    return;}
-if(id===20){
-if(worldOwner){addChatMessage("[WORLD] This world is already locked!","world");return;}
-if(name==="Unnamed"){addChatMessage("[WORLD] Set your player name first!","world");return;}}
+if(worldLockState==="glitch"&&id===20)return addChatMessage("[WORLD] World Lock is disabled in Glitch Mode","world");
+if(id===20){if(worldOwner)return addChatMessage("[WORLD] This world is already locked!","world");if(name==="Unnamed")return addChatMessage("[WORLD] Set your player name first!","world")}
 world[wy][wx]=id;
-if(id===20){
-worldOwner=name;
-worldLockPos={x:wx,y:wy};
-addChatMessage(`<${name}> locked this world`);
-if(hasIndex&&!indexProgress.step1){
-indexProgress.step1=true;
-mission1.style.opacity="0.5";
-mission1.innerHTML="✔ 1. Buy World Lock and place it";
-mission2.style.opacity="1";
-mission2.style.display="block";
-addChatMessage("[INDEX] New task unlocked...");}
-if(!unlockedAchievements.firstWorldLock){
-unlockedAchievements.firstWorldLock=true;
-gems+=100;
-updateGemsUI();
-addChatMessage(`${name} unlocked the achievement [mine, not yours!]`,"achievement");}}
-inventory[item]--;if(!inventory[item]){inventory[item]=0;hotbar.block=null;hotbar.selected=0;}
-updateInventoryUI();updateHotbar();}
+if(id===20){worldOwner=name;worldLockPos={x:wx,y:wy};addChatMessage(`<${name}> locked this world`);if(hasIndex&&!indexProgress.step1){indexProgress.step1=!0;mission1.style.opacity=".5";mission1.innerHTML="✔ 1. Buy World Lock and place it";mission2.style.opacity="1";mission2.style.display="block";addChatMessage("[INDEX] Unlocked new task...")}if(!unlockedAchievements.firstWorldLock){unlockedAchievements.firstWorldLock=!0;gems+=100;updateGemsUI();addChatMessage(`${name} unlocked the achievement [mine, not yours!]`,"achievement")}}
+inventory[item]--;!inventory[item]&&(inventory[item]=0,hotbar.block=null,hotbar.selected=0);updateInventoryUI();updateHotbar()}
+function createTeleportButton(){let b=document.getElementById("teleportOrbButton");if(b)return;b=document.createElement("button");b.id="teleportOrbButton";b.innerHTML="🌀";Object.assign(b.style,{position:"fixed",right:"15px",top:"50%",width:"50px",height:"50px",fontSize:"24px",borderRadius:"50%",zIndex:"999999"});document.body.appendChild(b);b.onclick=()=>{if(!teleportOrbPos)return;if(Date.now()<teleportCooldown)return addChatMessage(`[ORB] Cooldown ${Math.ceil((teleportCooldown-Date.now())/1e3)}s`);player.x=teleportOrbPos.x*blockSize;player.y=teleportOrbPos.y*blockSize-blockSize*2;teleportPending=!0;player.velX=player.velY=0;"onGround"in player&&(player.onGround=!1);teleportCooldown=Date.now()+6e4;addChatMessage("[ORB] Teleported!")};setInterval(()=>{if(!document.getElementById("teleportOrbButton"))return;b.innerHTML=Date.now()>=teleportCooldown?"🌀<br><span style='color:lime;font-size:10px'>READY</span>":`🌀<br><span style='font-size:10px'>${Math.ceil((teleportCooldown-Date.now())/1e3)}s</span>`},1e3)}
 requestAnimationFrame(loop);
 </script>    </body>    </html>
